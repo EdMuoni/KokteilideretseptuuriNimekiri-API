@@ -17,5 +17,15 @@
   "bugs": {
     "url": "https://github.com/EdMuoni/KokteilideretseptuuriNimekiri/issues"
   },
-  "homepage": "https://github.com/EdMuoni/KokteilideretseptuuriNimekiri#readme"
+  "homepage": "https://github.com/EdMuoni/KokteilideretseptuuriNimekiri#readme",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0",
+    "mariadb": "^3.4.5",
+    "nodemon": "^3.1.11",
+    "sequelize": "^6.37.7",
+    "swagger-ui-express": "^5.0.1",
+    "yamljs": "^0.3.0"
+  }
 }
