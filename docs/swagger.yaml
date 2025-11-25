@@ -1,0 +1,28 @@
+swagger: '2.0'
+info:
+    title: KokteilideretseptuuriNimekiri
+    version: 1.0.0
+    description: Help to find cocktail recipes
+paths:
+    /cocktails:
+        get:
+            tags:
+                - cocktails
+            responses:
+                '200':
+                    description: |
+                        Retruns a list of Cocktails
+                    schema:
+                        type: array
+                        items:
+                            type: string
+                    examples:
+                        application/json:
+                            - Margarita
+                            - Corpse Reviver
+                            - Mojito
+                            - Queen Mary
+                            - Mint Julep
+                            - Pina Colada
+            summary: Get all the <Cocktails> in API
+            description: Return all cocktails that are registered in API
