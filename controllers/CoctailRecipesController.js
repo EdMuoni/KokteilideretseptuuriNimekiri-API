@@ -1,35 +1,11 @@
-const {Datatypes} = require('sequelize');
+const {db} = require('../db');
+const Utilities = require('./Utilities.js');
 
-module.exports = (sequelize, DataTypes) => {
-    const Cocktail = this.sequelize.define(
-        'Cocktail', {
-        RecipeID: {
-            type: Datatypes.UUID,
-            primaryKey: true,
-            autoIncrement: true
-        },
-        Name : {
-            type: Datatypes.STRING,
-            allowNull: false
-        },
-        Description : {
-            type: Datatypes.STRING,
-            allowNull: false
-        },
-
-        Beverage : {
-            type: Datatypes.STRING,
-            allowNull: false
-        },
-        
-        UserScore : {
-            type: Datatypes.DECIMAL,
-            allowNull: false
-        },
-        
-    
-    })
-
-    console.log(Cocktail === this.sequelize.models.Cocktail)
-    return Cocktail;
+exports.getAll = 
+async (req, res) => {
+    const recipes = await db.Recipe.findAll();
+    console.log("getAll: " + recipes)
+    res
+    .status(200)
+    .send(recipes.map(({RecipeID, Name}) => {return{RecipeID, Name}}))
 }

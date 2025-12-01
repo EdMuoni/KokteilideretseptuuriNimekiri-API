@@ -6,8 +6,9 @@ const sequelize = new Sequelize(
     process.env.DB_USERPASS,
     {
         host: process.env.DB_HOSTNAME,
+        //dialect: 'mysql',
         dialect: 'mariadb',
-        logging: console.log,
+        logging: console.log, //sellekes, et saaks näha SQL päringuid konsoolis
     }
 )
 
@@ -23,6 +24,7 @@ async() => {
 const db = {};
 db.Sequelize = Sequelize;
 db.sequelize = sequelize;
+db.recipes = require('./models/Recipe.js')(sequelize, DataTypes);
 
 const sync = (async () => {
     await sequelize.sync({alter: true});
