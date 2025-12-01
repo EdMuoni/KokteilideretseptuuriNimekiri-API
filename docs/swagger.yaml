@@ -4,14 +4,23 @@ info:
     version: 1.0.0
     description: Help to find cocktail recipes
 paths:
-    /cocktails:
+    '/recipes/{RecipesID}/':
         get:
             tags:
-                - cocktails
+                - Recipes
+            responses:
+                '200':
+                    description: Returns all details of the given <Recipe>
+            summary: Get full details of a <Recipe>
+            description: Will return all details of a given <Recipe> based on RecipeID given.
+    /recipes:
+        get:
+            tags:
+                - recipes
             responses:
                 '200':
                     description: |
-                        Retruns a list of Cocktails
+                        Retruns a list of cocktail recipes
                     schema:
                         type: array
                         items:
@@ -24,5 +33,5 @@ paths:
                             - Queen Mary
                             - Mint Julep
                             - Pina Colada
-            summary: Get all the <Cocktails> in API
-            description: Return all cocktails that are registered in API
+            summary: Get all the <Recipes> in API
+            description: Return all cocktail recipes that are registered in API

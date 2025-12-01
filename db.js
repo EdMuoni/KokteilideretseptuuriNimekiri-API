@@ -6,7 +6,6 @@ const sequelize = new Sequelize(
     process.env.DB_USERPASS,
     {
         host: process.env.DB_HOSTNAME,
-        //dialect: 'mysql',
         dialect: 'mariadb',
         logging: console.log, //sellekes, et saaks näha SQL päringuid konsoolis
     }
