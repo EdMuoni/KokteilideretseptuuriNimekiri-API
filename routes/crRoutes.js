@@ -1,6 +1,6 @@
-const CotailRecipesController = require('../controllers/CoctailRecipesController');
+const CocktailRecipesController = require("../controllers/CocktailRecipesController")
 
 module.exports = (app) => {
-    app.get('/recipes')
-    .get(CotailRecipesController.getAll);   
+    app.route("/recipes")
+    .get(CocktailRecipesController.getAll)
 }
