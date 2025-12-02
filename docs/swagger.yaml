@@ -73,16 +73,14 @@ definitions:
             Beverage:
                 type: string
             UserScore:
-                format: float
+                format: double
                 description: ''
                 type: number
-        example: |-
-            {
-                "Name": "NewRecipeName",
-                "Description": "NewRecipeDescription",
-                "Beverage": "NewRecipeBeverage"
-                "UserScore": "NewUserScore"
-            }
+        example:
+            Name: NewRecipeName
+            Description: NewRecipeDescription
+            Beverage: NewRecipeBeverage
+            UserScore: '4.8'
     error:
         description: ''
         type: object
