@@ -35,6 +35,8 @@ paths:
             summary: Get all the <Recipes> in API
             description: Return all cocktail recipes that are registered in API
         post:
+            tags:
+                - Recipes
             parameters:
                 -
                     name: body
@@ -70,10 +72,17 @@ definitions:
                 type: string
             Beverage:
                 type: string
-        example:
-            Name: NewRecipeName
-            Description: NewRecipeDescription
-            Beverage: NewRecipeBeverage
+            UserScore:
+                format: float
+                description: ''
+                type: number
+        example: |-
+            {
+                "Name": "NewRecipeName",
+                "Description": "NewRecipeDescription",
+                "Beverage": "NewRecipeBeverage"
+                "UserScore": "NewUserScore"
+            }
     error:
         description: ''
         type: object

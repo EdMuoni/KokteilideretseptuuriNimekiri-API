@@ -3,6 +3,7 @@ const CocktailRecipesController = require("../controllers/CocktailRecipesControl
 module.exports = (app) => {
     app.route("/recipes")
     .get(CocktailRecipesController.getAll)
+    .post(CocktailRecipesController.create)
     app.route("/recipes/:RecipeID")
     .get(CocktailRecipesController.getByID)
 }
