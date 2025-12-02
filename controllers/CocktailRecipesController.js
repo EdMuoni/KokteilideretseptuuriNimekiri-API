@@ -1,4 +1,3 @@
-const { UUID } = require('sequelize');
 const {db} = require('../db');
 const Utilities = require('./Utilities.js');
 const UUID = require('uuid');
