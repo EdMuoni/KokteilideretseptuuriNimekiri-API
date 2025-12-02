@@ -4,19 +4,10 @@ info:
     version: 1.0.0
     description: Help to find cocktail recipes
 paths:
-    '/recipes/{RecipesID}/':
-        get:
-            tags:
-                - Recipes
-            responses:
-                '200':
-                    description: Returns all details of the given <Recipe>
-            summary: Get full details of a <Recipe>
-            description: Will return all details of a given <Recipe> based on RecipeID given.
     /recipes:
         get:
             tags:
-                - recipes
+                - Recipes
             responses:
                 '200':
                     description: Send 200 when recipe is created in databse.
@@ -56,6 +47,21 @@ paths:
                         $ref: '#/definitions/error'
             summary: Create a new <Recipe> into the app
             description: 'Create a new <Recipe> instance with its required details, for further usage.'
+    '/recipes/{RecipeID}/':
+        get:
+            tags:
+                - Recipes
+            responses:
+                '200':
+                    description: Returns all details of the given <Recipe>
+            summary: Get full details of a <Recipe>
+            description: Will return all details of a given <Recipe> based on RecipeID given.
+        parameters:
+            -
+                name: RecipeID
+                description: ID of Recipe
+                in: path
+                required: true
 definitions:
     new-Recipe:
         title: Root Type for new-Recipe
