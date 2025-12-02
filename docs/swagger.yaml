@@ -4,23 +4,13 @@ info:
     version: 1.0.0
     description: Help to find cocktail recipes
 paths:
-    '/recipes/{RecipesID}/':
+    /recipes:
         get:
             tags:
                 - Recipes
             responses:
                 '200':
-                    description: Returns all details of the given <Recipe>
-            summary: Get full details of a <Recipe>
-            description: Will return all details of a given <Recipe> based on RecipeID given.
-    /recipes:
-        get:
-            tags:
-                - recipes
-            responses:
-                '200':
-                    description: |
-                        Retruns a list of cocktail recipes
+                    description: Send 200 when recipe is created in databse.
                     schema:
                         type: array
                         items:
@@ -35,3 +25,70 @@ paths:
                             - Pina Colada
             summary: Get all the <Recipes> in API
             description: Return all cocktail recipes that are registered in API
+        post:
+            tags:
+                - Recipes
+            parameters:
+                -
+                    name: body
+                    description: The <Recipe> that is to be created.
+                    schema:
+                        $ref: '#/definitions/new-Recipe'
+                    in: body
+                    required: true
+            responses:
+                '201':
+                    description: Send 201 when <Recipe> is successfully added to the database
+                    schema:
+                        $ref: '#/definitions/new-Recipe'
+                '400':
+                    description: 'Missing some parameter, please review your request data.'
+                    schema:
+                        $ref: '#/definitions/error'
+            summary: Create a new <Recipe> into the app
+            description: 'Create a new <Recipe> instance with its required details, for further usage.'
+    '/recipes/{RecipeID}/':
+        get:
+            tags:
+                - Recipes
+            responses:
+                '200':
+                    description: Returns all details of the given <Recipe>
+            summary: Get full details of a <Recipe>
+            description: Will return all details of a given <Recipe> based on RecipeID given.
+        parameters:
+            -
+                name: RecipeID
+                description: ID of Recipe
+                in: path
+                required: true
+definitions:
+    new-Recipe:
+        title: Root Type for new-Recipe
+        description: ''
+        required:
+            - Beverage
+            - Description
+            - Name
+        type: object
+        properties:
+            Name:
+                type: string
+            Description:
+                type: string
+            Beverage:
+                type: string
+            UserScore:
+                format: double
+                description: ''
+                type: number
+        example:
+            Name: NewRecipeName
+            Description: NewRecipeDescription
+            Beverage: NewRecipeBeverage
+            UserScore: '4.8'
+    error:
+        description: ''
+        type: object
+        example:
+            error: Error message

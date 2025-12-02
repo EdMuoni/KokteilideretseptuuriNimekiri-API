@@ -20,6 +20,28 @@ async (req, res) => {
     .send(recipe);
 }
 
+exports.create = 
+async (req, res) => {
+    if(
+        !req.body.Name ||
+        !req.body.Description ||
+        !req.body.Beverage ||
+        !req.body.UserScore
+    ) {
+        return res.status(400).send({error: "Missing some parameter, please review your request data."});
+    }
+        const newRecipe = {
+        Name: req.body.Name,
+        Description: req.body.Description,
+        Beverage: req.body.Beverage,
+        UserScore: req.body.UserScore
+    }
+        const createdRecipe = await db.recipes.create(newRecipe);
+        return res
+        .location(`${Utilities.getBaseURL(req)}/recipes/${createdRecipe.RecipeID}`)
+        .sendStatus(201);  
+}
+
 const getRecipe =
 async (req, res) => {
     const idNumber = req.params.RecipeID;
