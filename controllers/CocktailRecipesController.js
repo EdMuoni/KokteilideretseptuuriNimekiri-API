@@ -42,6 +42,17 @@ async (req, res) => {
         .sendStatus(201);  
 }
 
+exports.deletedById =
+async (req, res) => {
+    const recipeToBeDeleted = await getRecipe(req, res);
+    if(!recipeToBeDeleted) 
+    {
+        return;
+    }
+    await recipeToBeDeleted.destroy();
+    re.status(204).send({error:"No Content"});
+}
+
 const getRecipe =
 async (req, res) => {
     const idNumber = req.params.RecipeID;
