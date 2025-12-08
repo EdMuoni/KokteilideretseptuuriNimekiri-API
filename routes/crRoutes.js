@@ -6,4 +6,5 @@ module.exports = (app) => {
     .post(CocktailRecipesController.create)
     app.route("/recipes/:RecipeID")
     .get(CocktailRecipesController.getByID)
+    .delete(CocktailRecipesController.deletedById)
 }
