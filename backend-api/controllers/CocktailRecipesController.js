@@ -50,7 +50,7 @@ async (req, res) => {
         return;
     }
     await recipeToBeDeleted.destroy();
-    re.status(204).send({error:"No Content"});
+    res.status(204).send({error:"No Content"});
 }
 
 exports.modifiedById =
@@ -74,7 +74,9 @@ async (req, res) => {
         recipeToBeChanged.Beverage = req.body.Beverage;
         recipeToBeChanged.UserScore = req.body.UserScore;
         await recipeToBeChanged.save();
-        return res.location(`${Utilities.getBaseURL(req)}/recipes/${createdRecipe.RecipeID}`).sendStatus(201)
+        return res
+        .location(`${Utilities.getBaseURL(req)}/recipes/${recipeToBeChanged.RecipeID}`)
+        .status(201)
         .send(recipeToBeChanged);
     
 }
