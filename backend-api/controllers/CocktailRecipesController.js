@@ -42,6 +42,32 @@ async (req, res) => {
         .sendStatus(201);  
 }
 
+exports.modifiedById =
+async (req, res) => {
+    const recipeToBeChanged = await getRecipe(req, res);
+    if(!recipeToBeChanged) {
+        return;
+    }
+    if(
+        !req.body.Name ||
+        !req.body.Description ||
+        !req.body.Beverage ||
+        !req.body.UserScore
+    )
+    {
+        return res.status(400).send({error: "Missing some parameter, please review your request data."});
+    }
+
+        recipeToBeChanged.Name = req.body.Name;
+        recipeToBeChanged.Description = req.body.Description;
+        recipeToBeChanged.Beverage = req.body.Beverage;
+        recipeToBeChanged.UserScore = req.body.UserScore;
+        await recipeToBeChanged.save();
+        return res.location(`${Utilities.getBaseURL(req)}/recipes/${createdRecipe.RecipeID}`).sendStatus(201)
+        .send(recipeToBeChanged);
+    
+}
+
 const getRecipe =
 async (req, res) => {
     const idNumber = req.params.RecipeID;

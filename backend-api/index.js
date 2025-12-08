@@ -10,6 +10,9 @@ const yamljs = require('yamljs');
 
 const swaggerDocument = yamljs.load('./docs/swagger.yaml');
 //const swaggerDocument = require('./docs/swagger.json');
+
+
+
 const { sync } = require('./db');
 
 // app.get('/cocktails', (req, res) => {
