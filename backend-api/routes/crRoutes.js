@@ -8,5 +8,4 @@ module.exports = (app) => {
     .get(CocktailRecipesController.getByID)
     .delete(CocktailRecipesController.deletedById)
     .put(CocktailRecipesController.modifiedById)
-    .delete(CocktailRecipesController.deleteById)
 }
