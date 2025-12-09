@@ -1,4 +1,5 @@
 const CocktailRecipesController = require("../controllers/CocktailRecipesController")
+const UsersController = require("../controllers/UsersController")
 
 module.exports = (app) => {
     app.route("/recipes")
@@ -8,4 +9,6 @@ module.exports = (app) => {
     .get(CocktailRecipesController.getByID)
     .delete(CocktailRecipesController.deletedById)
     .put(CocktailRecipesController.modifiedById)
+    app.route("/users")
+    .post(UsersController.create)
 }

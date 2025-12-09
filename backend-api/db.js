@@ -24,6 +24,15 @@ const db = {};
 db.Sequelize = Sequelize;
 db.sequelize = sequelize;
 db.recipes = require('./models/Recipe.js')(sequelize, DataTypes);
+db.users = require('./models/User.js')(sequelize, DataTypes);
+db.userRatings = require('./models/UserRating.js')(sequelize, DataTypes, db.recipes, db.users);
+
+db.userRatings.hasMany(db.users)
+db.users.hasMany(db.userRatings)
+
+db.userRatings.belongsTo(db.recipes)
+db.recipes.hasMany(db.userRatings)
+
 
 const sync = (async () => {
     await sequelize.sync({alter: true});
