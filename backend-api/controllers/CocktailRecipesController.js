@@ -41,6 +41,16 @@ async (req, res) => {
         .location(`${Utilities.getBaseURL(req)}/recipes/${createdRecipe.RecipeID}`)
         .sendStatus(201);  
 }
+exports.deletedById =
+async (req, res) => {
+    const recipeToBeDeleted = await getRecipe(req, res);
+    if(!recipeToBeDeleted) 
+    {
+        return;
+    }
+    await recipeToBeDeleted.destroy();
+    res.status(204).send({error: "No Content"});
+}	
 
 exports.deletedById =
 async (req, res) => {
