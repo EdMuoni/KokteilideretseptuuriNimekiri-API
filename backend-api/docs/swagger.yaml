@@ -123,6 +123,45 @@ paths:
                 in: path
                 required: true
                 type: string
+    /users:
+        post:
+            tags:
+                - Users
+            parameters:
+                -
+                    name: body
+                    schema:
+                        $ref: '#/definitions/new-User'
+                    in: body
+                    required: true
+            responses:
+                '201':
+                    description: Send 201 when user is successfully added to the database
+                    schema:
+                        $ref: '#/definitions/new-Recipe'
+                    examples:
+                        application/json:
+                            -
+                                FullName: MyName LastName
+                                EmailAddress: a@a.com
+                                PasswordHASH: abc123
+                                PhoneNumber2FA: 12 23423 23423
+                                UserName: KoooliKoll
+                                IsAdmin: boolean
+                '400':
+                    description: >-
+                        Sends code 400 when request body missing any or multiple of the required parameters
+                        for a new User are not present. 
+                    schema:
+                        $ref: '#/definitions/new-User'
+                    examples:
+                        application/json: |4
+
+                                [
+                                   ({error:`Missing some parameter: ${errors}`})
+                                ]
+            summary: Adds new Users to the app
+            description: 'Enables user signup functions, and furhter usage.'
 definitions:
     new-Recipe:
         title: Root Type for new-Recipe
@@ -162,3 +201,16 @@ definitions:
                 type: string
         example:
             RecipeID: d280a328-0835-4be0-b752-222d5c2f938f
+    new-User:
+        title: Root Type for new-User
+        description: 'New User data, PhoneNumber2FA is optional'
+        type: array
+        items:
+            type: string
+        example:
+            FullName: MyName LastName
+            EmailAddress: a@a.com
+            PasswordHASH: abc123
+            PhoneNumber2FA: 12 23423 23423
+            UserName: KoooliKoll
+            IsAdmin: false
