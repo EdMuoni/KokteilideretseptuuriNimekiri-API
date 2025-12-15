@@ -20,7 +20,6 @@ const sequelize = new Sequelize(
         console.error('Unable to connect to the database:', error);
     }
 })();
-frontend-setup
 
 const db = {};
 db.Sequelize = Sequelize;
@@ -77,4 +76,3 @@ module.exports = {db, sync};
 // db.userRatings.belongsTo(db.recipes, {foreignKey: 'RecipeID'});
 // db.users.hasMany(db.userRatings, {foreignKey: 'UserID'});
 // db.recipes.hasMany(db.userRatings, {foreignKey: 'RecipeID'});
-frontend-setup
