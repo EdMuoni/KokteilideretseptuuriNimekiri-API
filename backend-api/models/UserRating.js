@@ -10,8 +10,19 @@ module.exports = (sequelize, DataTypes) => {
         UserScore : {
             type: DataTypes.DECIMAL,
             allowNull: false
+        },
+        UserComment: {
+            type: DataTypes.STRING,
+            allowNull: false
+        },
+        UserID: {
+            type: DataTypes.UUID,
+            allowNull: false
+        },
+        RecipeID: {
+            type: DataTypes.UUID,
+            allowNull: false
         }
-
     });
     console.log(UserRating === sequelize.models.UserRating)
     return UserRating;
