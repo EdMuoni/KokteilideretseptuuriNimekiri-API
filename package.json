@@ -4,6 +4,7 @@
     "description": "",
     "main": "index.js",
     "scripts": {
+    "start": "concurrently \"cd backend-api && nodemon .\" \"cd frontend-site/kokteilideretseptuurinimekiri-frontend && npm run serve\""
     },
     "keywords": [],
     "author": "",
