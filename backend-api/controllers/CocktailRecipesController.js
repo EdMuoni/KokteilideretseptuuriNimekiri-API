@@ -52,6 +52,45 @@ async (req, res) => {
     res.status(204).send({error: "No Content"});
 }	
 
+exports.deletedById =
+async (req, res) => {
+    const recipeToBeDeleted = await getRecipe(req, res);
+    if(!recipeToBeDeleted) 
+    {
+        return;
+    }
+    await recipeToBeDeleted.destroy();
+    res.status(204).send({error:"No Content"});
+}
+
+exports.modifiedById =
+async (req, res) => {
+    const recipeToBeChanged = await getRecipe(req, res);
+    if(!recipeToBeChanged) {
+        return;
+    }
+    if(
+        !req.body.Name ||
+        !req.body.Description ||
+        !req.body.Beverage ||
+        !req.body.UserScore
+    )
+    {
+        return res.status(400).send({error: "Missing some parameter, please review your request data."});
+    }
+
+        recipeToBeChanged.Name = req.body.Name;
+        recipeToBeChanged.Description = req.body.Description;
+        recipeToBeChanged.Beverage = req.body.Beverage;
+        recipeToBeChanged.UserScore = req.body.UserScore;
+        await recipeToBeChanged.save();
+        return res
+        .location(`${Utilities.getBaseURL(req)}/recipes/${recipeToBeChanged.RecipeID}`)
+        .status(201)
+        .send(recipeToBeChanged);
+    
+}
+
 const getRecipe =
 async (req, res) => {
     const idNumber = req.params.RecipeID;
