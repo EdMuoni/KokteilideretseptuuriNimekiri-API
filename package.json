@@ -1,0 +1,25 @@
+{
+  "name": "kokteilideretseptuurinimekiri-api",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "concurrently \"cd backend && nodemon .\" \"cd frontend-site\\kokteilideretseptuurinimekiri-frontend && npm run serve\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/EdMuoni/KokteilideretseptuuriNimekiri.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/EdMuoni/KokteilideretseptuuriNimekiri/issues"
+  },
+  "homepage": "https://github.com/EdMuoni/KokteilideretseptuuriNimekiri#readme",
+  "dependencies": {
+    "concurrently": "^9.2.1"
+  }
+}

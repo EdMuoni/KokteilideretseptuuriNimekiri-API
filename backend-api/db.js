@@ -7,7 +7,7 @@ const sequelize = new Sequelize(
     {
         host: process.env.DB_HOSTNAME,
         dialect: 'mariadb',
-        logging: false, // Changed to false to reduce console noise
+        logging: false,
     }
 );
 
@@ -29,6 +29,42 @@ db.recipes = require('./models/Recipe.js')(sequelize, DataTypes);
 db.users = require('./models/User.js')(sequelize, DataTypes);
 db.userRatings = require('./models/UserRating.js')(sequelize, DataTypes);
 
+// Define correct associations WITH PROPER FOREIGN KEYS
+// UserRating belongs to User
+db.userRatings.belongsTo(db.users, {
+    foreignKey: 'UserID',  // ← THIS TELLS SEQUELIZE TO USE UserID, NOT UserUserID
+    as: 'user'
+});
+
+// UserRating belongs to Recipe
+db.userRatings.belongsTo(db.recipes, {
+    foreignKey: 'RecipeID',  // ← THIS TELLS SEQUELIZE TO USE RecipeID, NOT CocktailRecipeID
+    as: 'recipe'
+});
+
+// User has many UserRatings
+db.users.hasMany(db.userRatings, {
+    foreignKey: 'UserID',  // ← MUST MATCH THE COLUMN NAME IN YOUR DATABASE
+    as: 'ratings'
+});
+
+// Recipe has many UserRatings
+db.recipes.hasMany(db.userRatings, {
+    foreignKey: 'RecipeID',  // ← MUST MATCH THE COLUMN NAME IN YOUR DATABASE
+    as: 'ratings'
+});
+
+const sync = async () => {
+    try {
+        await sequelize.sync({force: false});
+        console.log('DB sync completed.');
+    } catch (error) {
+        console.error('Sync error:', error);
+    }
+};
+
+module.exports = {db, sync};
+
 // UserRating is a junction table for many-to-many relationship between Users and Recipes
 // db.recipes.belongsToMany(db.users, {through: db.userRatings, as: 'recipes'});
 // db.users.belongsToMany(db.recipes, {through: db.userRatings});
@@ -38,40 +74,3 @@ db.userRatings = require('./models/UserRating.js')(sequelize, DataTypes);
 // db.userRatings.belongsTo(db.recipes, {foreignKey: 'RecipeID'});
 // db.users.hasMany(db.userRatings, {foreignKey: 'UserID'});
 // db.recipes.hasMany(db.userRatings, {foreignKey: 'RecipeID'});
-
-// Define correct associations
-// UserRating belongs to User (a rating is made BY a user)
-db.userRatings.belongsTo(db.users, {
-    foreignKey: 'UserID',
-    as: 'user'
-});
-
-// UserRating belongs to Recipe (a rating is made FOR a recipe)
-db.userRatings.belongsTo(db.recipes, {
-    foreignKey: 'RecipeID',
-    as: 'recipe'
-});
-
-// User has many UserRatings (a user can make many ratings)
-db.users.hasMany(db.userRatings, {
-    foreignKey: 'UserID',
-    as: 'ratings'
-});
-
-// Recipe has many UserRatings (a recipe can have many ratings)
-db.recipes.hasMany(db.userRatings, {
-    foreignKey: 'RecipeID',
-    as: 'ratings'
-});
-
-const sync = async () => {
-    try {
-        // Changed to force: false to avoid data loss
-        await sequelize.sync({force: false});
-        console.log('DB sync completed.');
-    } catch (error) {
-        console.error('Sync error:', error);
-    }
-};
-
-module.exports = {db, sync};

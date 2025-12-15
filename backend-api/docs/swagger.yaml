@@ -162,6 +162,43 @@ paths:
                                 ]
             summary: Adds new Users to the app
             description: 'Enables user signup functions, and furhter usage.'
+    /userRatings:
+        post:
+            tags:
+                - UserRatings
+            parameters:
+                -
+                    name: body
+                    schema:
+                        $ref: '#/definitions/new-UserRating'
+                    in: body
+                    required: true
+            responses:
+                '201':
+                    description: Send 201 when UserRating is successfully added to the database
+                    schema:
+                        $ref: '#/definitions/new-UserRating'
+                    examples:
+                        application/json:
+                            -
+                                UserID: 019b1e0e-7034-70bd-a5dc-4d69c3818e49
+                                RecipeID: ee9cb6f9-ca98-4666-8e9b-1153e4ffa32f
+                                Score: '4.8'
+                                Comment: Best Cocktail Recipe ever
+                '400':
+                    description: >-
+                        Sends code 400 when request body missing any or multiple of the required parameters
+                        for a new UserRating are not present. 
+                    schema:
+                        $ref: '#/definitions/new-UserRating'
+                    examples:
+                        application/json:
+                            -
+                                UserID: 019b1e0e-7034-70bd-a5dc-4d69c3818e49
+                                RecipeID: ee9cb6f9-ca98-4666-8e9b-1153e4ffa32f
+                                Score: ''
+                                Comment: Best Cocktail Recipe ever
+            summary: Adds user userRating to the app
 definitions:
     new-Recipe:
         title: Root Type for new-Recipe
@@ -214,3 +251,17 @@ definitions:
             PhoneNumber2FA: 12 23423 23423
             UserName: KoooliKoll
             IsAdmin: false
+    new-UserRating:
+        title: Root Type for new-userRating
+        description: ''
+        type: object
+        properties:
+            Score:
+                type: string
+            Comment:
+                type: string
+        example:
+            UserID: 019b1e0e-7034-70bd-a5dc-4d69c3818e49
+            RecipeID: ee9cb6f9-ca98-4666-8e9b-1153e4ffa32f
+            UserScore: '4.8'
+            UserComment: Best Cocktail Recipe ever
