@@ -31,13 +31,6 @@ async (req,res) => {
 // ========================================
 exports.getAllUsers = async (req, res) => {
   try {
-    // Check if db.users exists
-    if (!db.users) {
-      console.error("Database users table not initialized");
-      return res.status(500).send({ 
-        error: "Database not properly initialized" 
-      });
-    }
 
     // Fetch all users from database
     const users = await db.users.findAll();
@@ -55,11 +48,26 @@ exports.getAllUsers = async (req, res) => {
     // Return success with user list
     return res.status(200).json(userList);
 
-  } catch (error) {
-    console.error("Error fetching users:", error);
-    return res.status(500).send({ 
-      error: "Failed to fetch users",
-      details: error.message 
-    });
-  }
+    }
 };
+
+// ========================================
+// GET USER BY ID
+// ========================================
+
+exportts.getByID = 
+async (req,res) => {
+    const user = await getUser(req, res);
+}
+
+const getUser = 
+async (req, res) => {
+    const userID = req.params.UserID;
+    const user = await db.users.findByPk(userID);
+    if (!user) {
+        res.status(404).json({error: `User with this ID does not exist ${userID}.`});
+        return null;
+    }
+    return user;
+
+}

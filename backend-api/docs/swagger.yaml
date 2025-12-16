@@ -129,6 +129,7 @@ paths:
                 - Users
             responses:
                 '200':
+                    description: Returns all details of all Users
                     schema:
                         type: array
                         items:
@@ -230,6 +231,49 @@ paths:
                                 Score: ''
                                 Comment: Best Cocktail Recipe ever
             summary: Adds user userRating to the app
+    '/users/{UserID}':
+        get:
+            tags:
+                - Users
+            parameters:
+                -
+                    name: UserID
+                    description: ID of User
+                    in: path
+                    required: true
+                    type: string
+            responses:
+                '200':
+                    description: Returns all details of a given User
+                    schema:
+                        type: array
+                        items:
+                            type: string
+                    examples:
+                        application/json: |-
+                            [   {
+                                "UserID":"sfsdfsdf"
+                                "FullName":"fxddfh"
+                                "UserName":"fdsgsdf"
+                                "EmailAddress":"asfasf@fsdg.com"
+                                "IsAdmin":"false"
+                                }
+                            ]
+                '404':
+                    description: Returns repsonse that user is not found
+                    schema:
+                        type: array
+                        items:
+                            type: string
+                    examples:
+                        application/json: |-
+                            [
+                                [
+                                    "error":"User not found"
+                                ]
+                            ]
+            summary: Get all details of an existing User
+            description: 'Will return all details of a given USer, based on UserID given'
 definitions:
     new-Recipe:
         title: Root Type for new-Recipe
