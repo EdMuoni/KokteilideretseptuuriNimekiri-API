@@ -69,5 +69,4 @@ async (req, res) => {
         return null;
     }
     return user;
-
 }
