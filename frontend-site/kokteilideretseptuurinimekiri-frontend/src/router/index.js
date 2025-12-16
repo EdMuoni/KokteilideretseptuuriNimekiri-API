@@ -22,6 +22,14 @@ const routes = [
     name: "recipes",
     component: () => import("../views/RecipesView.vue"),
   },
+  {
+    path: "/recipe/:seekID",
+    name: "recipe",
+    component: () => import("../views/SingleRecipeView.vue"),
+    props: (route) => {
+      return { seekID: String(route.params.seekID) };
+    },
+  },
 ];
 
 const router = createRouter({

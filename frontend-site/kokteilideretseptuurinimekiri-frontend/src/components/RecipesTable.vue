@@ -9,14 +9,25 @@ export default {
 
 <template>
   <table class="table table-striped">
-    <tr>
-      <th>Recipe ID</th>
-      <th>Recipe Name</th>
-    </tr>
+    <thead>
+      <tr>
+        <th>Recipe ID</th>
+        <th>Name</th>
+      </tr>
+    </thead>
 
-    <tr v-for="item in items" :key="item.RecipeID">
-      <td>{{ item.RecipeID }}</td>
-      <td>{{ item.RecipeName }}</td>
-    </tr>
+    <tbody>
+      <tr v-for="item in items" :key="item.RecipeID">
+        <td>{{ item.RecipeID }}</td>
+        <td>{{ item.Name }}</td>
+        <td>
+          <router-link
+            :to="{ name: 'recipe', params: { seekID: item.RecipeID } }"
+          >
+            <button>View Details</button>
+          </router-link>
+        </td>
+      </tr>
+    </tbody>
   </table>
 </template>

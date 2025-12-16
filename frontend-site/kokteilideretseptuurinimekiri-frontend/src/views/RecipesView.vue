@@ -2,13 +2,15 @@
 import RecipesTable from "../components/RecipesTable.vue";
 export default {
   components: {
-    RecipesTable,
+    RecipesTable, // Register child component
   },
   data() {
     return {
-      allRecipes: [],
+      allRecipes: [], // Initialize empty array
     };
   },
+
+  // created() runs automatically when the component is created
   async created() {
     this.allRecipes = await (
       await fetch("http://localhost:8080/recipes")
@@ -16,8 +18,9 @@ export default {
   },
 };
 </script>
+
 <template>
   <main>
-    <RecipesTable :recipes="allRecipes" />
+    <RecipesTable :items="allRecipes" />
   </main>
 </template>
