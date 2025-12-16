@@ -124,6 +124,37 @@ paths:
                 required: true
                 type: string
     /users:
+        get:
+            tags:
+                - Users
+            responses:
+                '200':
+                    schema:
+                        type: array
+                        items:
+                            type: string
+                    examples:
+                        application/json: |-
+                            [   {
+                                "UserID":"sfsdfsdf"
+                                "UserName":"fxddfh"
+                                "IsAdmin":"false"
+                                },
+                                
+                                {
+                                "UserID":"sfsdfsdf"
+                                "UserName":"fxddfh"
+                                "IsAdmin":"false"
+                                },
+                                
+                                {
+                                "UserID":"sfsdfsdf"
+                                "UserName":"fxddfh"
+                                "IsAdmin":"false"
+                                }
+                            ]
+            summary: 'Returns a list of all users, with limited details'
+            description: 'Returns a list of all users, with limited details'
         post:
             tags:
                 - Users
@@ -199,7 +230,6 @@ paths:
                                 Score: ''
                                 Comment: Best Cocktail Recipe ever
             summary: Adds user userRating to the app
-
 definitions:
     new-Recipe:
         title: Root Type for new-Recipe
@@ -266,4 +296,3 @@ definitions:
             RecipeID: ee9cb6f9-ca98-4666-8e9b-1153e4ffa32f
             UserScore: '4.8'
             UserComment: Best Cocktail Recipe ever
-

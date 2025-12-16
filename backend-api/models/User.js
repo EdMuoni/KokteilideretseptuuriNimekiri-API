@@ -5,7 +5,7 @@ module.exports = (sequelize, DataTypes) => {
             UserID: {
                 type: DataTypes.UUID,
                 primaryKey: true,
-                defaultValue: DataTypes.UUID
+                defaultValue: DataTypes.UUIDV4
             },
             FullName: {
                 type: DataTypes.STRING,
@@ -27,11 +27,11 @@ module.exports = (sequelize, DataTypes) => {
                 type: DataTypes.STRING,
                 
             },
-            // LISTID ORDERS MISSING DUE TO TABLE MISSING
-            // IsAdmin: {
-            //     type: DataTypes.BOOLEAN,
-            //     defaultValue: false
-            // }
+            //LISTID ORDERS MISSING DUE TO TABLE MISSING
+            IsAdmin: {
+                type: DataTypes.BOOLEAN,
+                defaultValue: false
+            }
         }
     )
     console.log(User === sequelize.models.User)

@@ -10,28 +10,6 @@ async (req,res) => {
         !req.body.PasswordHASH ||
         !req.body.UserName 
     ){
-        // const bodycontent = req.body;
-        // var errors = "";
-        // switch(bodycontent) 
-        // {
-        //     case !req.body.FullName:
-        //         errors+="FullName, "
-        //         break;
-        //     case !req.body.EmailAddress:
-        //         errors+="EmailAddress, "
-        //         break;
-        //     case !req.body.PasswordHASH:
-        //         errors+="Password, "
-        //         break;
-        //     case !req.body.UserName:
-        //         errors+="UserName, "
-        //         break;
-        //     default:
-        //         break;
-        // }
-        // console.log(errors);
-        
-        // return res.status(400).send({error:`Missing some parameter: ${errors}`})
     }
     const newUser = {
         UserID: UUID.v7(),
@@ -48,3 +26,40 @@ async (req,res) => {
     return res
     .location(`${Utilities.getBaseURL(req)}/users/${resultingUser.UserID}`).sendStatus(201);
 }
+// ========================================
+// GET ALL USERS
+// ========================================
+exports.getAllUsers = async (req, res) => {
+  try {
+    // Check if db.users exists
+    if (!db.users) {
+      console.error("Database users table not initialized");
+      return res.status(500).send({ 
+        error: "Database not properly initialized" 
+      });
+    }
+
+    // Fetch all users from database
+    const users = await db.users.findAll();
+
+    // If no users found, return empty array
+    if (!users || users.length === 0) {
+      return res.status(200).json([]);
+    }
+
+    // Map users to return only specific fields
+    const userList = users.map(({ UserID, FullName, UserName, IsAdmin }) => {
+      return { UserID, FullName, UserName, IsAdmin };
+    });
+
+    // Return success with user list
+    return res.status(200).json(userList);
+
+  } catch (error) {
+    console.error("Error fetching users:", error);
+    return res.status(500).send({ 
+      error: "Failed to fetch users",
+      details: error.message 
+    });
+  }
+};
