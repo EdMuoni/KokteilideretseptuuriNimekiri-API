@@ -1,8 +1,17 @@
 <script>
+import router from "../router";
+
 export default {
   name: "RecipesTable",
   props: {
     items: Array,
+  },
+  methods: {
+    async deleteRecipe(RecipeID) {
+      await await fetch(`http://localhost:8080/recipe/${this.RecipeID}`, {
+        method: "DELETE",
+      });
+    },
   },
 };
 </script>
@@ -25,6 +34,11 @@ export default {
             :to="{ name: 'recipe', params: { seekID: item.RecipeID } }"
           >
             <button>View Details</button>
+          </router-link>
+        </td>
+        <td>
+          <router-link>
+            <button @click="deleteRecipe(item.RecipeID)">Delete</button>
           </router-link>
         </td>
       </tr>
