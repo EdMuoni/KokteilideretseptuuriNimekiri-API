@@ -195,6 +195,30 @@ paths:
             summary: Adds new Users to the app
             description: 'Enables user signup functions, and furhter usage.'
     /userRatings:
+        get:
+            tags:
+                - UserRatings
+            responses:
+                '200':
+                    description: Send 200 when there is a UserRatings from database to show
+                    schema:
+                        type: array
+                        items:
+                            type: string
+                    examples:
+                        application/json:
+                            -
+                                UserID: 019b1e0e-7034-70bd-a5dc-4d69c3818e49
+                                RecipeID: ee9cb6f9-ca98-4666-8e9b-1153e4ffa32f
+                                Score: '4.8'
+                                Comment: Best Cocktail Recipe ever
+                            -
+                                UserID: dd891aad-aae2-45dd-94c2-5daca44be2f5
+                                RecipeID: ee9cb6f9-ca98-4666-8e9b-1153e4ffa32f
+                                Score: '2.1'
+                                Comment: 'Meh, I have seen better!'
+            summary: Get the list of all <UserRatings> in API
+            description: Return all users UserRatings that are registered in API
         post:
             tags:
                 - UserRatings
@@ -230,7 +254,7 @@ paths:
                                 RecipeID: ee9cb6f9-ca98-4666-8e9b-1153e4ffa32f
                                 Score: ''
                                 Comment: Best Cocktail Recipe ever
-            summary: Adds user userRating to the app
+            summary: Adds user UserRating into the app
     '/users/{UserID}':
         get:
             tags:
@@ -273,7 +297,47 @@ paths:
                                 ]
                             ]
             summary: Get all details of an existing User
-            description: 'Will return all details of a given USer, based on UserID given'
+            description: 'Will return all details of a given User, based on UserID given'
+    '/userRatings/{UserRatingID}':
+        get:
+            tags:
+                - UserRatings
+            parameters:
+                -
+                    name: UserRatingID
+                    description: ID of UserRating
+                    in: path
+                    required: true
+                    type: string
+            responses:
+                '200':
+                    description: Returns all details of a given User
+                    schema:
+                        type: array
+                        items:
+                            type: string
+                    examples:
+                        application/json:
+                            -
+                                UserID: 019b1e0e-7034-70bd-a5dc-4d69c3818e49
+                                RecipeID: ee9cb6f9-ca98-4666-8e9b-1153e4ffa32f
+                                Score: '4.8'
+                                Comment: Best Cocktail Recipe ever
+                '404':
+                    description: Returns repsonse that UserRating is not found
+                    schema:
+                        type: array
+                        items:
+                            type: string
+                    examples:
+                        application/json: |-
+                            [
+                                [
+                                    "error":"UserRating not found"
+                                ]
+                            ]
+            summary: Get all details of an existing UserRating
+            description: 'Will return all details of a given UserRating, based on given UserRatingID'
 definitions:
     new-Recipe:
         title: Root Type for new-Recipe

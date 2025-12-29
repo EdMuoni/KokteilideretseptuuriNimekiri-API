@@ -15,5 +15,9 @@ module.exports = (app) => {
     .get(UsersController.getAllUsers)
     app.route("/UserRatings")
     .post(UserRatingsController.create)
+    .get(UserRatingsController.getAll)
+    .get(UserRatingsController.getById)
+    .put(UserRatingsController.update)
+    .delete(UserRatingsController.delete)
 }
 
