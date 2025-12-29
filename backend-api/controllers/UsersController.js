@@ -47,7 +47,11 @@ exports.getAllUsers = async (req, res) => {
 
     // Return success with user list
     return res.status(200).json(userList);
-
+    } catch (error) {  
+    console.error("Error fetching users:", error);
+    return res.status(500).send({ 
+      error: "Failed to fetch users",
+      details: error.message });
     }
 };
 
@@ -55,7 +59,7 @@ exports.getAllUsers = async (req, res) => {
 // GET USER BY ID
 // ========================================
 
-exportts.getByID = 
+exports.getByID = 
 async (req,res) => {
     const user = await getUser(req, res);
 }
