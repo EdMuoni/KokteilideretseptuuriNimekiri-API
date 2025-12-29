@@ -67,7 +67,7 @@ exports.getAll = async (req, res) => {
 };
 
 // ========================================
-// GET ONE - Get rating by ID
+// GetByID - Get UserRating by ID
 // ========================================
 exports.getById = async (req, res) => {
     try {
