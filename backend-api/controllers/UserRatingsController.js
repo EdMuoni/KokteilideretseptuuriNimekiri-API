@@ -67,14 +67,17 @@ exports.getAll = async (req, res) => {
 };
 
 // ========================================
-// GET ONE - Get rating by ID
+// GetByID - Get rating by ID
 // ========================================
 exports.getById = async (req, res) => {
     try {
         const rating = await db.userRatings.findByPk(req.params.UserRatingID, {
-            include: [
-                {model: db.users, as: 'user'},
-                {model: db.recipes, as: 'recipe'}
+            attributes: [
+                'UserRatingID', 
+                'UserID', 
+                'RecipeID', 
+                'UserScore', 
+                'UserComment'
             ]
         });
         
