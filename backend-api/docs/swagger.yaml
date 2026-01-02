@@ -225,6 +225,7 @@ paths:
             parameters:
                 -
                     name: body
+                    description: The <UserRating> that is to be created.
                     schema:
                         $ref: '#/definitions/new-UserRating'
                     in: body
@@ -348,6 +349,59 @@ paths:
                             ]
             summary: Get all details of an existing UserRating
             description: 'Will return all details of a given UserRating, based on given UserRatingID'
+        put:
+            tags:
+                - UserRatings
+            parameters:
+                -
+                    name: UserRatingID
+                    description: ID of UserRating
+                    in: path
+                    required: true
+                    type: string
+                -
+                    name: body
+                    description: Contains new data to be changed in the specified UserRating
+                    schema:
+                        $ref: '#/definitions/new-UserRating'
+                    in: body
+                    required: true
+            responses:
+                '201':
+                    description: Returns 201 upon successful modification of UserRating details
+                    schema:
+                        type: array
+                        items:
+                            type: string
+                    examples:
+                        application/json:
+                            UserScore: '3'
+                            UserComment: Recipe is good but need some changes
+                '400':
+                    description: Returns bad request when one or multiple parameters are missing
+                    schema:
+                        type: array
+                        items:
+                            type: string
+                    examples:
+                        application/json:
+                            -
+                                error: 'cannot give info, because some parameters are missing.'
+                '404':
+                    description: Returns repsonse that UserRating is not found
+                    schema:
+                        type: array
+                        items:
+                            type: string
+                    examples:
+                        application/json: |-
+                            [
+                                [
+                                    "error":"UserRating not found"
+                                ]
+                            ]
+            summary: Modifies parameters of an existing UserRating
+            description: 'Will change certain details of a given UserRating, based on given UserRatingID'
 definitions:
     new-Recipe:
         title: Root Type for new-Recipe
@@ -410,7 +464,5 @@ definitions:
             Comment:
                 type: string
         example:
-            UserID: 019b1e0e-7034-70bd-a5dc-4d69c3818e49
-            RecipeID: ee9cb6f9-ca98-4666-8e9b-1153e4ffa32f
-            UserScore: '4.8'
-            UserComment: Best Cocktail Recipe ever
+            UserScore: '3'
+            UserComment: Recipe is good but need some changes
