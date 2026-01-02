@@ -402,6 +402,33 @@ paths:
                             ]
             summary: Modifies parameters of an existing UserRating
             description: 'Will change certain details of a given UserRating, based on given UserRatingID'
+        delete:
+            tags:
+                - UserRatings
+            parameters:
+                -
+                    name: UserRatingID
+                    description: ID of UserRating
+                    in: path
+                    required: true
+                    type: string
+            responses:
+                '204':
+                    description: Returns "No Content" when removal of <UserRating> is successful
+                    schema:
+                        $ref: '#/definitions/error'
+                    examples:
+                        application/json:
+                            -
+                                error: No Content
+                '404':
+                    description: Returns error when <UserRating> with specified ID does not exist
+                    examples:
+                        application/json:
+                            -
+                                error: Id not found
+            summary: Delete a registered user <UserRating> from the app
+            description: Deletes and entry from the app to never be seen again.
 definitions:
     new-Recipe:
         title: Root Type for new-Recipe
