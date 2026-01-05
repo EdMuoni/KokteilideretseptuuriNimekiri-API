@@ -1,14 +1,14 @@
 <script>
 export default {
-  // components: {
-  //     thisRecipe: {
-  //     RecipeID: "",
-  //     Name: "",
-  //     Description: "",
-  //     Beverage: "",
-  //     UserScore: 0,
-  //   },
-  // },
+  components: {
+      thisRecipe: {
+      RecipeID: "",
+      Name: "",
+      Description: "",
+      Beverage: "",
+      UserScore: 0,
+    },
+  },
   props: {
     seekID: {
       type: String,
@@ -34,13 +34,9 @@ export default {
 
   methods: {
     async getDetails() {
-      //   const response = await fetch(
-      //     `http://localhost:8080/recipes/${this.seekID}`
-      //   );
       this.thisRecipe = await (
-        await fetch(`http://localhost:8080/recipe/${this.seekID}`)
+        await fetch(`http://localhost:8080/recipes/${this.seekID}`)
       ).json();
-      //   this.thisRecipe = await response.json();
     },
   },
 };
