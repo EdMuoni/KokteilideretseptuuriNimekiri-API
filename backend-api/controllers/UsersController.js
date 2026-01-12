@@ -1,6 +1,7 @@
 const {db} = require('../db')
 const Utilities = require('./Utilities')
 const UUID = require('uuid')
+const jwt = require('jsonwebtoken');
 
 exports.create =
 async (req,res) => {
@@ -10,6 +11,7 @@ async (req,res) => {
         !req.body.PasswordHASH ||
         !req.body.UserName 
     ){
+        return res.status(400).json({error: 'Missing required fields'});
     }
     const newUser = {
         UserID: UUID.v7(),
@@ -26,9 +28,9 @@ async (req,res) => {
     return res
     .location(`${Utilities.getBaseURL(req)}/users/${resultingUser.UserID}`).sendStatus(201);
 }
-// ========================================
+
 // GET ALL USERS
-// ========================================
+
 exports.getAllUsers = async (req, res) => {
   try {
 
@@ -55,9 +57,8 @@ exports.getAllUsers = async (req, res) => {
     }
 };
 
-// ========================================
+
 // GET USER BY ID
-// ========================================
 
 exports.getByID = 
 async (req,res) => {

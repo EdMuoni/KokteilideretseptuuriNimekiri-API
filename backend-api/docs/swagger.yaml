@@ -429,6 +429,59 @@ paths:
                                 error: Id not found
             summary: Delete a registered user <UserRating> from the app
             description: Deletes and entry from the app to never be seen again.
+    /auth/(Register):
+        post:
+            tags:
+                - Users
+            responses:
+                '201':
+                    description: Send 201 when new <User> is successfully added into the database
+                    schema:
+                        type: array
+                        items:
+                            type: string
+                    examples:
+                        application/json:
+                            FullName: MyName LastName
+                            EmailAddress: a@a.com
+                            PasswordHASH: abc123
+                            PhoneNumber2FA: 12 23423 23423
+                            UserName: KoooliKoll
+                            IsAdmin: false
+                '400':
+                    description: 'Missing some parameter, please review your request data.'
+                    schema:
+                        $ref: '#/definitions/error'
+                    examples:
+                        application/json:
+                            FullName: MyName LastName
+                            EmailAddress: ''
+                            PasswordHASH: ''
+                            PhoneNumber2FA: 12 23423 23423
+                            UserName: KoooliKoll
+                            IsAdmin: false
+                '409':
+                    description: Current email/username is in use.
+                    schema:
+                        $ref: '#/definitions/error'
+                    examples:
+                        application/json:
+                            -
+                                FullName: MyName LastName
+                                EmailAddress: a@a.com
+                                PasswordHASH: abc123
+                                PhoneNumber2FA: 12 23423 23423
+                                UserName: KoooliKoll
+                                IsAdmin: false
+                            -
+                                FullName: MyName LastName
+                                EmailAddress: b@b.com
+                                PasswordHASH: abc123
+                                PhoneNumber2FA: 12 23423 23423
+                                UserName: KoooliKoll
+                                IsAdmin: false
+            summary: Registers a new <User> into the app
+            description: 'Creates a new <User> instance with its required details, for further usage.'
 definitions:
     new-Recipe:
         title: Root Type for new-Recipe

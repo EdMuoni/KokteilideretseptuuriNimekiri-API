@@ -13,6 +13,10 @@ module.exports = (app) => {
     app.route("/users")
     .post(UsersController.create)
     .get(UsersController.getAllUsers)
+
+    app.post(UsersController.register)
+    //.post(UsersController.login)
+    
     app.route("/UserRatings")
     .post(UserRatingsController.create)
     .get(UserRatingsController.getAll)
