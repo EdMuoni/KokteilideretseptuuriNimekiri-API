@@ -8,12 +8,33 @@ export default {
   },
   methods: {
     async deleteRecipe(RecipeID) {
-      await await fetch(`http://localhost:8080/recipe/${this.RecipeID}`, {
-        method: "DELETE",
-      });
+      try {
+        const response = await fetch(`http://localhost:8080/recipes/${RecipeID}`, {
+          method: "DELETE",
+        });
+
+        if (response.ok || response.status === 204) {
+          // Leiab ID järgi elemendi ja eemaldab seda nimekirjast
+          const index = this.items.findIndex(
+            (item) => item.RecipeID === RecipeID
+          );
+
+          if (index > -1) {
+            this.items.splice(index, 1);
+          }
+          
+          console.log(`Recipe ${RecipeID} deleted successfully!`);
+        } else {
+          console.error("Failed to delete recipe:", response.status);
+        }
+      } catch (error) {
+        console.error("Error deleting recipe:", error);
+        alert("An error occurred while deleting the recipe.");
+      }
     },
-  },
+  }, 
 };
+
 </script>
 
 <template>
@@ -22,6 +43,7 @@ export default {
       <tr>
         <th>Recipe ID</th>
         <th>Name</th>
+        <th>Actions</th>
       </tr>
     </thead>
 
@@ -33,13 +55,17 @@ export default {
           <router-link
             :to="{ name: 'recipe', params: { seekID: item.RecipeID } }"
           >
-            <button>View Details</button>
+            <button class="btn btn-primary">View Details</button>
           </router-link>
         </td>
         <td>
-          <router-link>
-            <button @click="deleteRecipe(item.RecipeID)">Delete</button>
-          </router-link>
+          <!-- PARANDUS 5: Eemaldatud liigne <router-link> -->
+          <button 
+            @click="deleteRecipe(item.RecipeID)" 
+            class="btn btn-danger"
+          >
+            Delete
+          </button>
         </td>
       </tr>
     </tbody>
