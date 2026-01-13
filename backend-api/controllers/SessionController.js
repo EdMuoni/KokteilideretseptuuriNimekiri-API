@@ -40,3 +40,24 @@ exports.newSession = async (req, res) => {
     IsAdmin: userToProvideSessionFor.IsAdmin,
   });
 };
+
+exports.reAuthenticate = 
+async (req, res) => {
+    if(!req.session.UserID){
+        return res.status(401).send({error: "Session expired, please log in again."});
+    }
+    var user = await db.users.findByPk(req.session.UserID);
+    res.status(200).send({message: "User valid",})
+    if(!user)
+    {
+        return res.status(401).send({error: "Logged in user is not found, please log in again."});
+    }
+        return res.status(200).send({
+        UserID: user.UserID,
+        FullName: user.FullName,
+        EmailAddress: user.EmailAddress,
+        UserName: user.UserName,
+        IsAdmin: user.IsAdmin
+    });
+}
+

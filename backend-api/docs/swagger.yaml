@@ -504,6 +504,7 @@ paths:
                     type: string
             responses:
                 '200':
+                    description: Returns 200 when User puts valid email
                     schema:
                         type: array
                         items:
@@ -583,6 +584,31 @@ paths:
                                 error: User not found
             summary: Make session get cookie
             description: Inserts a sesion object into database and gives user a cookie
+    /sessions/me:
+        get:
+            tags:
+                - Users
+                - Auth
+            responses:
+                '200':
+                    description: 'Respond 200, when refresh if login was successful'
+                    schema:
+                        $ref: '#/definitions/loggedIn-User'
+                    examples:
+                        application/json:
+                            UserID: 019bb2c4-630f-777b-9413-a826435bf3b8
+                            FullName: KoooliKoll
+                            EmailAddress: a@a.co
+                            IsAdmin: false
+                '401':
+                    description: 'Returns 401, when reauthentification of User was unsuccessful'
+                    schema:
+                        $ref: '#/definitions/error'
+                    examples:
+                        application/json:
+                            -
+                                error: 'Session expired, please log in again.'
+            summary: Endpoint to refresh login.
 definitions:
     new-Recipe:
         title: Root Type for new-Recipe
@@ -659,7 +685,7 @@ definitions:
         example:
             Email: abc@abc.com
             Password: abc123
-    leggedIn-User:
+    loggedIn-User:
         title: Root Type for leggedIn-User
         description: 'Data of the user, that is returned upon successful new session, or reauthenticating old session'
         type: object
@@ -668,6 +694,6 @@ definitions:
                 type: string
         example:
             UserID: 019bb2c4-630f-777b-9413-a826435bf3b8
-            DisplayName: KoooliKoll
+            FullName: KoooliKoll
             EmailAddress: a@a.co
             IsAdmin: false

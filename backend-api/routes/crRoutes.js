@@ -1,6 +1,7 @@
 const CocktailRecipesController = require("../controllers/CocktailRecipesController")
 const UsersController = require("../controllers/UsersController")
 const UserRatingsController = require("../controllers/UserRatingsController")
+const SessionController = require("../controllers/SessionController")
 console.log('REGISTER TYPE:', typeof UsersController.register);
 
 module.exports = (app) => {
@@ -18,13 +19,17 @@ module.exports = (app) => {
     .post(UsersController.create)
     .get(UsersController.getAllUsers)
 
-    app.post("/auth/register",UsersController.register)
+    app.route("/auth/register")
+    .post(UsersController.register)
     //app.post("/auth/login",UsersController.login)
 
     app.route("/auth/:LoginEmail")
-    .get(UsersController.getByEmail)
-   
-    
+    //.get(UsersController.getByEmail)
+    app.route("/sessions")
+    .post(SessionController.newSession)
+    app.route("/sessions/me")
+    .get(SessionController.reAuthenticate)
+
     app.route("/UserRatings")
     .post(UserRatingsController.create)
     .get(UserRatingsController.getAll)
