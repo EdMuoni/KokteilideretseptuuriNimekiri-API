@@ -46,7 +46,7 @@ exports.register = async (req, res) => {
             }
 
             // Hash password
-            const hashedPassword = await Utilities.gimmePassword(Password);
+            const hashedPassword = await Utilities.gimmePassword(PasswordHASH);
 
             // Creating user object
             const newUser = {
@@ -91,8 +91,10 @@ exports.register = async (req, res) => {
         }
         catch  (error) {
             console.error('Register error:', error);
+            console.error('Stack trace:', error.stack);
             return res.status(500).json({
-            error: 'Registration failed'
+            error: 'Registration failed',
+            details: error.message
             });
     }
 };

@@ -1,4 +1,6 @@
 const {Sequelize, DataTypes} = require('sequelize');
+const session = require('express-session');
+const SequelizeStore = require('connect-session-sequelize')(session.Store);
 
 const sequelize = new Sequelize(
     process.env.DB_DBNAME,
@@ -7,7 +9,6 @@ const sequelize = new Sequelize(
     {
         host: process.env.DB_HOSTNAME,
         dialect: 'mariadb',
-
         logging: false,
     }
 );
@@ -20,6 +21,11 @@ const sequelize = new Sequelize(
         console.error('Unable to connect to the database:', error);
     }
 })();
+
+const sessionStore = new SequelizeStore({
+    db: sequelize,
+    tableName: 'Sessions',
+});
 
 const db = {};
 db.Sequelize = Sequelize;
@@ -56,13 +62,19 @@ db.recipes.hasMany(db.userRatings, {
     as: 'ratings'
 });
 
-const sync = async () => {
-    try {
-        await sequelize.sync({force: false});
-        console.log('DB sync completed.');
-    } catch (error) {
-        console.error('Sync error:', error);
-    }
-};
+const sync = (async () => {
+    await sessionStore.sync();
+    await sequelize.sync({alter: true});
+    console.log('DB sync has been completed.');
+});
 
-module.exports = {db, sync};
+// const sync = async () => {
+//     try {
+//         await sequelize.sync({force: false});
+//         console.log('DB sync completed.');
+//     } catch (error) {
+//         console.error('Sync error:', error);
+//     }
+// };
+
+module.exports = {db, sync, sessionStore};

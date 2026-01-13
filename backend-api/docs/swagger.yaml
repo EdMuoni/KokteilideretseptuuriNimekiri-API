@@ -429,7 +429,8 @@ paths:
                                 error: Id not found
             summary: Delete a registered user <UserRating> from the app
             description: Deletes and entry from the app to never be seen again.
-    /auth/(Register):
+    /auth: {}
+    /auth/register:
         post:
             tags:
                 - Users
@@ -490,7 +491,6 @@ paths:
                                 IsAdmin: false
             summary: Registers a new <User> into the app
             description: 'Creates a new <User> instance with its required details, for further usage.'
-    /auth: {}
 definitions:
     new-Recipe:
         title: Root Type for new-Recipe
