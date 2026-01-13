@@ -609,6 +609,42 @@ paths:
                             -
                                 error: 'Session expired, please log in again.'
             summary: Endpoint to refresh login.
+    /auth/logout:
+        delete:
+            tags:
+                - Users
+                - Auth
+            responses:
+                '200':
+                    description: Responds 200 OK when removal of session and logout of the user is successful
+                    schema:
+                        type: array
+                        items:
+                            type: string
+                    examples:
+                        application/json: |-
+                            [
+                                [
+                                    "ok":"true"
+                                ]
+                            ]
+                '401':
+                    description: 'Response 401 when User is trying to log out, without being logged in'
+                    schema:
+                        $ref: '#/definitions/error'
+                    examples:
+                        application/json:
+                            -
+                                error: User is not logged in
+                '500':
+                    description: 'Response 500, when attempting to delete uncaught error occures'
+                    schema:
+                        $ref: '#/definitions/error'
+                    examples:
+                        application/json:
+                            -
+                                error: 'Server error, please hold.'
+            summary: Remove a session when the on User requests
 definitions:
     new-Recipe:
         title: Root Type for new-Recipe
