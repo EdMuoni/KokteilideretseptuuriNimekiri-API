@@ -433,6 +433,14 @@ paths:
         post:
             tags:
                 - Users
+            parameters:
+                -
+                    name: body
+                    description: Registering new User
+                    schema:
+                        $ref: '#/definitions/new-User'
+                    in: body
+                    required: true
             responses:
                 '201':
                     description: Send 201 when new <User> is successfully added into the database
@@ -482,6 +490,7 @@ paths:
                                 IsAdmin: false
             summary: Registers a new <User> into the app
             description: 'Creates a new <User> instance with its required details, for further usage.'
+    /auth: {}
 definitions:
     new-Recipe:
         title: Root Type for new-Recipe

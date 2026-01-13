@@ -1,25 +1,30 @@
 const CocktailRecipesController = require("../controllers/CocktailRecipesController")
 const UsersController = require("../controllers/UsersController")
 const UserRatingsController = require("../controllers/UserRatingsController")
+console.log('REGISTER TYPE:', typeof UsersController.register);
 
 module.exports = (app) => {
+
     app.route("/recipes")
     .get(CocktailRecipesController.getAll)
     .post(CocktailRecipesController.create)
+
     app.route("/recipes/:RecipeID")
     .get(CocktailRecipesController.getByID)
     .delete(CocktailRecipesController.deletedById)
     .put(CocktailRecipesController.modifiedById)
+
     app.route("/users")
     .post(UsersController.create)
     .get(UsersController.getAllUsers)
 
-    app.post(UsersController.register)
-    //.post(UsersController.login)
+    app.post("/auth/register",UsersController.register)
+    //app.post("/auth/login",UsersController.login)
     
     app.route("/UserRatings")
     .post(UserRatingsController.create)
     .get(UserRatingsController.getAll)
+
     app.route("/UserRatings/:UserRatingID")
     .get(UserRatingsController.getById)
     .put(UserRatingsController.update)
