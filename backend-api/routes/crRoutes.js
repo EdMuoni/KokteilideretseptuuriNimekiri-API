@@ -20,6 +20,10 @@ module.exports = (app) => {
 
     app.post("/auth/register",UsersController.register)
     //app.post("/auth/login",UsersController.login)
+
+    app.route("/auth/:LoginEmail")
+    .get(UsersController.getByEmail)
+   
     
     app.route("/UserRatings")
     .post(UserRatingsController.create)

@@ -429,7 +429,6 @@ paths:
                                 error: Id not found
             summary: Delete a registered user <UserRating> from the app
             description: Deletes and entry from the app to never be seen again.
-    /auth: {}
     /auth/register:
         post:
             tags:
@@ -491,6 +490,99 @@ paths:
                                 IsAdmin: false
             summary: Registers a new <User> into the app
             description: 'Creates a new <User> instance with its required details, for further usage.'
+    '/auth/{LoginEmail}':
+        get:
+            tags:
+                - Users
+                - Auth
+            parameters:
+                -
+                    name: LoginEmail
+                    description: Email by which the user is logging in
+                    in: path
+                    required: true
+                    type: string
+            responses:
+                '200':
+                    schema:
+                        type: array
+                        items:
+                            type: string
+                    examples:
+                        application/json:
+                            -
+                                Email: Email was correct
+                '400':
+                    description: Return 400 when user puts wrong email.
+                    schema:
+                        $ref: '#/definitions/error'
+                    examples:
+                        application/json:
+                            -
+                                Error: Incorrect Email
+                '404':
+                    description: Return 404 when user by this email does not exist.
+                    schema:
+                        $ref: '#/definitions/error'
+                    examples:
+                        application/json: |
+                            [
+                                   {(Error:"User by this Email does not exist")}
+                            ]
+            summary: Get a user by their Email adress
+        parameters:
+            -
+                name: LoginEmail
+                in: path
+                required: true
+    /sessions:
+        post:
+            tags:
+                - Users
+                - Auth
+            parameters:
+                -
+                    name: body
+                    description: Data of the user
+                    schema:
+                        $ref: '#/definitions/login-User'
+                    in: body
+                    required: true
+            responses:
+                '200':
+                    description: Returns selected user data for the site functioning
+                    schema:
+                        type: array
+                        items:
+                            type: string
+                    examples:
+                        application/json:
+                            UserID: 019bb2c4-630f-777b-9413-a826435bf3b8
+                            DisplayName: KoooliKoll
+                            EmailAddress: a@a.co
+                            IsAdmin: false
+                '400':
+                    description: Returns bad request when parameters are missing.
+                    schema:
+                        $ref: '#/definitions/error'
+                '401':
+                    description: 'Returns "Access Denied" when incorrect data is inserted. '
+                    schema:
+                        $ref: '#/definitions/error'
+                    examples:
+                        application/json:
+                            -
+                                error: Password mismatch
+                '404':
+                    description: Returns response when user is not found
+                    schema:
+                        $ref: '#/definitions/error'
+                    examples:
+                        application/json:
+                            -
+                                error: User not found
+            summary: Make session get cookie
+            description: Inserts a sesion object into database and gives user a cookie
 definitions:
     new-Recipe:
         title: Root Type for new-Recipe
@@ -555,3 +647,27 @@ definitions:
         example:
             UserScore: '3'
             UserComment: Recipe is good but need some changes
+    login-User:
+        title: Root Type for login-User
+        description: Data that the User provides upon an attempt to login
+        type: object
+        properties:
+            Email:
+                type: string
+            Password:
+                type: string
+        example:
+            Email: abc@abc.com
+            Password: abc123
+    leggedIn-User:
+        title: Root Type for leggedIn-User
+        description: 'Data of the user, that is returned upon successful new session, or reauthenticating old session'
+        type: object
+        properties:
+            UserID:
+                type: string
+        example:
+            UserID: 019bb2c4-630f-777b-9413-a826435bf3b8
+            DisplayName: KoooliKoll
+            EmailAddress: a@a.co
+            IsAdmin: false

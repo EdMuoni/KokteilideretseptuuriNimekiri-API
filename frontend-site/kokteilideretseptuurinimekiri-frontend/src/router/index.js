@@ -30,6 +30,11 @@ const routes = [
       return { seekID: String(route.params.seekID) };
     },
   },
+  {
+    path: "/register",
+    name: "register",
+    component: () => import("../views/RegisterView.vue"),
+  }
 ];
 
 const router = createRouter({
