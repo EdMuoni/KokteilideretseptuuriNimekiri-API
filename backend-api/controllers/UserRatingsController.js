@@ -7,17 +7,17 @@ const UUID = require('uuid');
 // CREATE - Add a new rating
 // ========================================
 exports.create = async (req, res) => {
-    if (!req.body.UserScore || !req.body.UserComment) {
+    if (!req.body.UserID || !req.body.RecipeID ||!req.body.UserScore || !req.body.UserComment) {
         return res.status(400).send({
             error: "Missing some parameter, please review your request data."
         });
     }
 
-    if (!req.body.UserID || !req.body.RecipeID) {
-        return res.status(404).send({
-            error: "USER or RECIPE not found"
-        });
-    }
+    // if (!req.body.UserID || !req.body.RecipeID ||!req.body.UserScore || !req.body.UserComment) {
+    //     return res.status(404).send({
+    //         error: "USER or RECIPE not found"
+    //     });
+    // }
 
     try {
         let newRating = {

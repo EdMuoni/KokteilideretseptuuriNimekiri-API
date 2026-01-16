@@ -33,7 +33,7 @@ module.exports = (sequelize, DataTypes) => {
                 type: DataTypes.STRING,
                 
             },
-            //MISSING DUE TO TABLE MISSING
+            
             IsAdmin: {
                 type: DataTypes.BOOLEAN,
                 defaultValue: false

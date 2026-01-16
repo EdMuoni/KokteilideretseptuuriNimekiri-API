@@ -15,6 +15,7 @@ exports.newSession = async (req, res) => {
       .status(400)
       .json({ error: "Missing parameters for logging in." + missingparams });
   }
+  
   LoginEmail = req.body.LoginEmail;
   console.log(LoginEmail);
   var userToProvideSessionFor = await db.users.findOne({
