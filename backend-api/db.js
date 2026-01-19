@@ -13,6 +13,8 @@ const sequelize = new Sequelize(
     }
 );
 
+const SequelizeStore = new SequelizeStoreFactory(session.Store);
+
 (async () => {
     try {
         await sequelize.authenticate();
@@ -30,12 +32,11 @@ const sessionStore = new SequelizeStore({
 const db = {};
 db.Sequelize = Sequelize;
 db.sequelize = sequelize;
-
-
 // Load models
 db.recipes = require('./models/Recipe.js')(sequelize, DataTypes);
 db.users = require('./models/User.js')(sequelize, DataTypes);
 db.userRatings = require('./models/UserRating.js')(sequelize, DataTypes);
+//db.sessions = require('./models/Session.js')(sequelize, DataTypes);
 
 // Define correct associations WITH PROPER FOREIGN KEYS
 // UserRating belongs to User
@@ -67,14 +68,5 @@ const sync = (async () => {
     await sequelize.sync({alter: true});
     console.log('DB sync has been completed.');
 });
-
-// const sync = async () => {
-//     try {
-//         await sequelize.sync({force: false});
-//         console.log('DB sync completed.');
-//     } catch (error) {
-//         console.error('Sync error:', error);
-//     }
-// };
 
 module.exports = {db, sync, sessionStore};
