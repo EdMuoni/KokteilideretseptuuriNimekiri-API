@@ -4,14 +4,12 @@ const host = 'localhost';
 const express = require('express');
 const cors = require('cors');
 const app = express();
+const session = require('express-session');
 
 const swaggerUI = require('swagger-ui-express');
 const yamljs = require('yamljs');
-
 const swaggerDocument = yamljs.load('./docs/swagger.yaml');
-//const swaggerDocument = require('./docs/swagger.json');
-
-const {sync} = require('./db');
+const {sync, sessionStore} = require('./db');
 
 app.use(cors());
 app.use('/docs', swaggerUI.serve, swaggerUI.setup(swaggerDocument));

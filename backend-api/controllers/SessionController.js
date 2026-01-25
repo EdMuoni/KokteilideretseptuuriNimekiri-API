@@ -38,3 +38,37 @@ async (req,res) => {
         IsAdmin: userToProvideSessionFor.IsAdmin
     })
 }
+
+exports.reAuthenticate =
+async (req,res) => {
+    if(!req.session.UserID) {
+        return res.status(401).send({error:"Session expired, please log in again."})
+    }
+    var user = await db.users.findByPk(req.session.UserID)
+    if(!user) 
+        {
+        return res.status(401).send({error:"Logged in user not found, please log in again."})
+    }
+        return res.status(200).send({
+        UserID : user.UserID,
+        DisplayName: user.DisplayName,
+        EmailAddress: user.EmailAddress,
+        IsAdmin: user.IsAdmin
+    })
+}
+
+// exports.removeSession = 
+// async (req, res) => {
+//     if(!req.session || req.session === undefined) {
+//         return res.status(401).send({error:"User is not logged in"})
+//     }
+
+//     req.session.destroy(
+//         err => {
+//             if (err) return res.status(500).send({error:"Server error, please hold."})
+//         }
+//     )
+
+//     res.clearCookie("connect.sid")
+//     res.status(200).send({ok:true})
+// }

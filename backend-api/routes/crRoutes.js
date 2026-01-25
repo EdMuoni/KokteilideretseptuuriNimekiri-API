@@ -24,9 +24,13 @@ module.exports = (app) => {
     //app.post("/auth/login",UsersController.login)
 
     app.route("/auth/:LoginEmail")
-    .get(UsersController.getByEmail)
+    .get(UsersController.getByID)
     app.route("/session")
-    .post(SessionsController.newSession)
+    .post(SessionController.newSession)
+    app.route("/sessions/me")
+    .get(SessionController.reAuthenticate)
+    app.route("/auth/logout")
+    //.delete(SessionController.removeSession)
 
     app.route("/UserRatings")
     .post(UserRatingsController.create)

@@ -9,20 +9,18 @@ const sequelize = new Sequelize(
     {
         host: process.env.DB_HOSTNAME,
         dialect: 'mariadb',
-        logging: false,
+        logging: console.log,
     }
 );
 
-const SequelizeStore = new SequelizeStoreFactory(session.Store);
-
-(async () => {
+async() => {
     try {
         await sequelize.authenticate();
-        console.log('Connection has been established successfully!');
+        console.log('Connection has been established successfully, yippie!');
     } catch (error) {
-        console.error('Unable to connect to the database:', error);
+        console.error("Unable to connect. " + error);
     }
-})();
+}
 
 const sessionStore = new SequelizeStore({
     db: sequelize,
