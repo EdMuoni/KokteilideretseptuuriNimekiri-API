@@ -225,7 +225,7 @@ paths:
             parameters:
                 -
                     name: body
-                    description: The <UserRating> that is to be created.
+                    description: User gives comment and rating about given recipe.
                     schema:
                         $ref: '#/definitions/new-UserRating'
                     in: body
@@ -238,10 +238,10 @@ paths:
                     examples:
                         application/json:
                             -
-                                UserID: 019b1e0e-7034-70bd-a5dc-4d69c3818e49
-                                RecipeID: ee9cb6f9-ca98-4666-8e9b-1153e4ffa32f
-                                Score: '4.8'
-                                Comment: Best Cocktail Recipe ever
+                                UserID: 019bc766-d172-77fd-803a-1bf46ba9b884
+                                RecipeID: 4c523d71-01be-48b2-bada-562b737ed69e
+                                UserScore: '4.8'
+                                UserComment: Best Cocktail Recipe ever
                 '400':
                     description: >-
                         Sends code 400 when request body missing any or multiple of the required parameters
@@ -318,12 +318,14 @@ paths:
                         items:
                             type: string
                     examples:
-                        application/json:
-                            -
-                                UserID: 019b1e0e-7034-70bd-a5dc-4d69c3818e49
-                                RecipeID: ee9cb6f9-ca98-4666-8e9b-1153e4ffa32f
-                                Score: '4.8'
-                                Comment: Best Cocktail Recipe ever
+                        application/json: |4
+
+                               {
+                                    "UserID": "019bc767-0e18-746f-9741-f66ae5d01483",
+                                    "RecipeID": "d5c9b567-6782-44cb-8b33-694ac1927f27",
+                                    "UserScore": "4.8",
+                                    "UserComment": "Best Cocktail Recipe ever"
+                                }
                 '400':
                     description: Invalid request syntax.
                     schema:
@@ -374,9 +376,14 @@ paths:
                         items:
                             type: string
                     examples:
-                        application/json:
-                            UserScore: '3'
-                            UserComment: Recipe is good but need some changes
+                        application/json: |4
+
+                                {
+                                    "UserID": "019bc767-0e18-746f-9741-f66ae5d01483",
+                                    "RecipeID": "d5c9b567-6782-44cb-8b33-694ac1927f27",
+                                    "UserScore": "4.8",
+                                    "UserComment": "Best Cocktail Recipe ever"
+                                }
                 '400':
                     description: Returns bad request when one or multiple parameters are missing
                     schema:
@@ -609,6 +616,42 @@ paths:
                             -
                                 error: 'Session expired, please log in again.'
             summary: Endpoint to refresh login.
+    /auth/logout:
+        delete:
+            tags:
+                - Users
+                - Auth
+            responses:
+                '200':
+                    description: Responds 200 OK when removal of session and logout of the user is successful
+                    schema:
+                        type: array
+                        items:
+                            type: string
+                    examples:
+                        application/json: |-
+                            [
+                                [
+                                    "ok":"true"
+                                ]
+                            ]
+                '401':
+                    description: 'Response 401 when User is trying to log out, without being logged in'
+                    schema:
+                        $ref: '#/definitions/error'
+                    examples:
+                        application/json:
+                            -
+                                error: User is not logged in
+                '500':
+                    description: 'Response 500, when attempting to delete uncaught error occures'
+                    schema:
+                        $ref: '#/definitions/error'
+                    examples:
+                        application/json:
+                            -
+                                error: 'Server error, please hold.'
+            summary: Remove a session when the on User requests
 definitions:
     new-Recipe:
         title: Root Type for new-Recipe
@@ -671,8 +714,10 @@ definitions:
             Comment:
                 type: string
         example:
-            UserScore: '3'
-            UserComment: Recipe is good but need some changes
+            UserID: 019bc767-0e18-746f-9741-f66ae5d01483
+            RecipeID: d5c9b567-6782-44cb-8b33-694ac1927f27
+            UserScore: '4.8'
+            UserComment: Best Cocktail Recipe ever
     login-User:
         title: Root Type for login-User
         description: Data that the User provides upon an attempt to login
