@@ -275,15 +275,14 @@ paths:
                         items:
                             type: string
                     examples:
-                        application/json: |-
-                            [   {
-                                "UserID":"sfsdfsdf"
-                                "FullName":"fxddfh"
-                                "UserName":"fdsgsdf"
-                                "EmailAddress":"asfasf@fsdg.com"
+                        application/json: |4
+                               {
+                                "UserID":"019bc766-d172-77fd-803a-1bf46ba9b884"
+                                "FullName":"Test"
+                                "UserName":"Test"
+                                "EmailAddress":"test@test.com"
                                 "IsAdmin":"false"
                                 }
-                            ]
                 '404':
                     description: Returns repsonse that user is not found
                     schema:
@@ -291,12 +290,11 @@ paths:
                         items:
                             type: string
                     examples:
-                        application/json: |-
-                            [
+                        application/json: |4
+
                                 [
                                     "error":"User not found"
                                 ]
-                            ]
             summary: Get all details of an existing User
             description: 'Will return all details of a given User, based on UserID given'
     '/userRatings/{UserRatingID}':
@@ -511,33 +509,43 @@ paths:
                     type: string
             responses:
                 '200':
-                    description: Returns 200 when User puts valid email
+                    description: 'Returns 200, when User with valid email address is found'
                     schema:
                         type: array
                         items:
                             type: string
                     examples:
-                        application/json:
-                            -
-                                Email: Email was correct
+                        application/json: |4
+                               {
+                                "UserID":"019bc766-d172-77fd-803a-1bf46ba9b884"
+                                "FullName":"Test"
+                                "UserName":"Test"
+                                "EmailAddress":"test@test.com"
+                                "IsAdmin":"false"
+                                }
                 '400':
-                    description: Return 400 when user puts wrong email.
+                    description: Return response 400 LoginEmail is missing.
                     schema:
                         $ref: '#/definitions/error'
                     examples:
-                        application/json:
-                            -
-                                Error: Incorrect Email
+                        application/json: |4
+
+                                {
+                                    "Error": "Missing LoginEmail"
+                                }
                 '404':
-                    description: Return 404 when user by this email does not exist.
+                    description: Return response 404 when user with this email is not found.
                     schema:
                         $ref: '#/definitions/error'
                     examples:
-                        application/json: |
-                            [
-                                   {(Error:"User by this Email does not exist")}
-                            ]
-            summary: Get a user by their Email adress
+                        application/json: |4+
+
+                                   {
+                                       (Error:"User with this Email does not exist")
+                                       
+                                   }
+
+            summary: Get a user by their Email address
         parameters:
             -
                 name: LoginEmail
@@ -603,9 +611,9 @@ paths:
                         $ref: '#/definitions/loggedIn-User'
                     examples:
                         application/json:
-                            UserID: 019bb2c4-630f-777b-9413-a826435bf3b8
+                            UserID: 019bc766-d172-77fd-803a-1bf46ba9b884
                             FullName: KoooliKoll
-                            EmailAddress: a@a.co
+                            EmailAddress: a@a.com
                             IsAdmin: false
                 '401':
                     description: 'Returns 401, when reauthentification of User was unsuccessful'

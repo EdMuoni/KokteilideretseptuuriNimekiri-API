@@ -1,0 +1,12 @@
+{
+    "__meta__": {
+        "about": "xh session file",
+        "xh": "0.25.0"
+    },
+    "auth": {
+        "type": null,
+        "raw_auth": null
+    },
+    "cookies": [],
+    "headers": []
+}

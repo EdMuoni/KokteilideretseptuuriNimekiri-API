@@ -57,18 +57,18 @@ async (req,res) => {
     })
 }
 
-// exports.removeSession = 
-// async (req, res) => {
-//     if(!req.session || req.session === undefined) {
-//         return res.status(401).send({error:"User is not logged in"})
-//     }
+exports.removeSession = 
+async (req, res) => {
+    if(!req.session || req.session === undefined) {
+        return res.status(401).send({error:"User is not logged in"})
+    }
 
-//     req.session.destroy(
-//         err => {
-//             if (err) return res.status(500).send({error:"Server error, please hold."})
-//         }
-//     )
+    req.session.destroy(
+        err => {
+            if (err) return res.status(500).send({error:"Server error, please hold."})
+        }
+    )
 
-//     res.clearCookie("connect.sid")
-//     res.status(200).send({ok:true})
-// }
+    res.clearCookie("connect.sid")
+    res.status(200).send({ok:true})
+}
