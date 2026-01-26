@@ -8,21 +8,12 @@ const session = require('express-session');
 
 const swaggerUI = require('swagger-ui-express');
 const yamljs = require('yamljs');
-
 const swaggerDocument = yamljs.load('./docs/swagger.yaml');
-//const swaggerDocument = require('./docs/swagger.json');
-
-
 const {sync, sessionStore} = require('./db');
-
-// app.get('/cocktails', (req, res) => {
-//     res.send(["Margarita", "Corpse Reviver", "Mojito", "Queen Mary", "Mint Julep", "Pina Colada"]);
-// })
 
 app.use(cors());
 app.use('/docs', swaggerUI.serve, swaggerUI.setup(swaggerDocument));
 app.use(express.json());
-
 app.use(session({
     secret: process.env.SESSION_SECRET || "dev",
     store: sessionStore,
@@ -32,7 +23,7 @@ app.use(session({
         httpOnly: true,
         sameSite: "lax",
         secure: false,
-        maxAge: 1000 * 60 * 60 * 2, // 2 hours 
+        maxAge: 7*24*60*60*1000, // 7 days
     }
 }))
 

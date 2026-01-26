@@ -13,6 +13,5 @@ exports.gimmePassword = async (passwordInTXT) => {
 exports.letMeIn = async (givenPassword, givenHASH) => {
     const match = await bcrypt.compare(givenPassword, givenHASH);
     return match;
-frontend-setup
 }
 

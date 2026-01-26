@@ -9,18 +9,18 @@ const sequelize = new Sequelize(
     {
         host: process.env.DB_HOSTNAME,
         dialect: 'mariadb',
-        logging: false,
+        logging: console.log,
     }
 );
 
-(async () => {
+async() => {
     try {
         await sequelize.authenticate();
-        console.log('Connection has been established successfully!');
+        console.log('Connection has been established successfully, yippie!');
     } catch (error) {
-        console.error('Unable to connect to the database:', error);
+        console.error("Unable to connect. " + error);
     }
-})();
+}
 
 const sessionStore = new SequelizeStore({
     db: sequelize,
@@ -30,12 +30,11 @@ const sessionStore = new SequelizeStore({
 const db = {};
 db.Sequelize = Sequelize;
 db.sequelize = sequelize;
-
-
 // Load models
 db.recipes = require('./models/Recipe.js')(sequelize, DataTypes);
 db.users = require('./models/User.js')(sequelize, DataTypes);
 db.userRatings = require('./models/UserRating.js')(sequelize, DataTypes);
+//db.sessions = require('./models/Session.js')(sequelize, DataTypes);
 
 // Define correct associations WITH PROPER FOREIGN KEYS
 // UserRating belongs to User
@@ -67,14 +66,5 @@ const sync = (async () => {
     await sequelize.sync({alter: true});
     console.log('DB sync has been completed.');
 });
-
-// const sync = async () => {
-//     try {
-//         await sequelize.sync({force: false});
-//         console.log('DB sync completed.');
-//     } catch (error) {
-//         console.error('Sync error:', error);
-//     }
-// };
 
 module.exports = {db, sync, sessionStore};

@@ -237,10 +237,11 @@ paths:
                         $ref: '#/definitions/new-UserRating'
                     examples:
                         application/json:
-                            UserID: 019bc766-d172-77fd-803a-1bf46ba9b884
-                            RecipeID: 4c523d71-01be-48b2-bada-562b737ed69e
-                            UserScore: '4.8'
-                            UserComment: Best Cocktail Recipe ever
+                            -
+                                UserID: 019bc766-d172-77fd-803a-1bf46ba9b884
+                                RecipeID: 4c523d71-01be-48b2-bada-562b737ed69e
+                                UserScore: '4.8'
+                                UserComment: Best Cocktail Recipe ever
                 '400':
                     description: >-
                         Sends code 400 when request body missing any or multiple of the required parameters
@@ -274,15 +275,14 @@ paths:
                         items:
                             type: string
                     examples:
-                        application/json: |-
-                            [   {
-                                "UserID":"sfsdfsdf"
-                                "FullName":"fxddfh"
-                                "UserName":"fdsgsdf"
-                                "EmailAddress":"asfasf@fsdg.com"
+                        application/json: |4
+                               {
+                                "UserID":"019bc766-d172-77fd-803a-1bf46ba9b884"
+                                "FullName":"Test"
+                                "UserName":"Test"
+                                "EmailAddress":"test@test.com"
                                 "IsAdmin":"false"
                                 }
-                            ]
                 '404':
                     description: Returns repsonse that user is not found
                     schema:
@@ -290,12 +290,11 @@ paths:
                         items:
                             type: string
                     examples:
-                        application/json: |-
-                            [
+                        application/json: |4
+
                                 [
                                     "error":"User not found"
                                 ]
-                            ]
             summary: Get all details of an existing User
             description: 'Will return all details of a given User, based on UserID given'
     '/userRatings/{UserRatingID}':
@@ -311,18 +310,20 @@ paths:
                     type: string
             responses:
                 '200':
-                    description: Returns all details of a given User
+                    description: Returns all details of a certain UserRating
                     schema:
                         type: array
                         items:
                             type: string
                     examples:
-                        application/json:
-                            -
-                                UserID: 019b1e0e-7034-70bd-a5dc-4d69c3818e49
-                                RecipeID: ee9cb6f9-ca98-4666-8e9b-1153e4ffa32f
-                                Score: '4.8'
-                                Comment: Best Cocktail Recipe ever
+                        application/json: |4
+
+                               {
+                                    "UserID": "019bc767-0e18-746f-9741-f66ae5d01483",
+                                    "RecipeID": "d5c9b567-6782-44cb-8b33-694ac1927f27",
+                                    "UserScore": "4.8",
+                                    "UserComment": "Best Cocktail Recipe ever"
+                                }
                 '400':
                     description: Invalid request syntax.
                     schema:
@@ -373,9 +374,14 @@ paths:
                         items:
                             type: string
                     examples:
-                        application/json:
-                            UserScore: '3'
-                            UserComment: Recipe is good but need some changes
+                        application/json: |4
+
+                                {
+                                    "UserID": "019bc767-0e18-746f-9741-f66ae5d01483",
+                                    "RecipeID": "d5c9b567-6782-44cb-8b33-694ac1927f27",
+                                    "UserScore": "4.8",
+                                    "UserComment": "Best Cocktail Recipe ever"
+                                }
                 '400':
                     description: Returns bad request when one or multiple parameters are missing
                     schema:
@@ -503,33 +509,43 @@ paths:
                     type: string
             responses:
                 '200':
-                    description: Returns 200 when User puts valid email
+                    description: 'Returns 200, when User with valid email address is found'
                     schema:
                         type: array
                         items:
                             type: string
                     examples:
-                        application/json:
-                            -
-                                Email: Email was correct
+                        application/json: |4
+                               {
+                                "UserID":"019bc766-d172-77fd-803a-1bf46ba9b884"
+                                "FullName":"Test"
+                                "UserName":"Test"
+                                "EmailAddress":"test@test.com"
+                                "IsAdmin":"false"
+                                }
                 '400':
-                    description: Return 400 when user puts wrong email.
+                    description: Return response 400 LoginEmail is missing.
                     schema:
                         $ref: '#/definitions/error'
                     examples:
-                        application/json:
-                            -
-                                Error: Incorrect Email
+                        application/json: |4
+
+                                {
+                                    "Error": "Missing LoginEmail"
+                                }
                 '404':
-                    description: Return 404 when user by this email does not exist.
+                    description: Return response 404 when user with this email is not found.
                     schema:
                         $ref: '#/definitions/error'
                     examples:
-                        application/json: |
-                            [
-                                   {(Error:"User by this Email does not exist")}
-                            ]
-            summary: Get a user by their Email adress
+                        application/json: |4+
+
+                                   {
+                                       (Error:"User with this Email does not exist")
+                                       
+                                   }
+
+            summary: Get a user by their Email address
         parameters:
             -
                 name: LoginEmail
@@ -595,9 +611,9 @@ paths:
                         $ref: '#/definitions/loggedIn-User'
                     examples:
                         application/json:
-                            UserID: 019bb2c4-630f-777b-9413-a826435bf3b8
+                            UserID: 019bc766-d172-77fd-803a-1bf46ba9b884
                             FullName: KoooliKoll
-                            EmailAddress: a@a.co
+                            EmailAddress: a@a.com
                             IsAdmin: false
                 '401':
                     description: 'Returns 401, when reauthentification of User was unsuccessful'
@@ -706,8 +722,8 @@ definitions:
             Comment:
                 type: string
         example:
-            UserID: 019bc766-d172-77fd-803a-1bf46ba9b884
-            RecipeID: 4c523d71-01be-48b2-bada-562b737ed69e
+            UserID: 019bc767-0e18-746f-9741-f66ae5d01483
+            RecipeID: d5c9b567-6782-44cb-8b33-694ac1927f27
             UserScore: '4.8'
             UserComment: Best Cocktail Recipe ever
     login-User:
