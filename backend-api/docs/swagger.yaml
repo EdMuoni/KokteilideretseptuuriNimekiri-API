@@ -637,28 +637,31 @@ paths:
                         items:
                             type: string
                     examples:
-                        application/json: |-
-                            [
-                                [
-                                    "ok":"true"
-                                ]
-                            ]
+                        application/json: |4
+
+                                {
+                                    "ok":"Session successfully eliminated."
+                                }
                 '401':
                     description: 'Response 401 when User is trying to log out, without being logged in'
                     schema:
                         $ref: '#/definitions/error'
                     examples:
-                        application/json:
-                            -
-                                error: User is not logged in
+                        application/json: |4
+
+                                {
+                                    "error": "User is not logged in"
+                                }
                 '500':
                     description: 'Response 500, when attempting to delete uncaught error occures'
                     schema:
                         $ref: '#/definitions/error'
                     examples:
-                        application/json:
-                            -
-                                error: 'Server error, please hold.'
+                        application/json: |4
+
+                                {
+                                    "error": "Server error, please hold."
+                                }
             summary: Remove a session when the on User requests
 definitions:
     new-Recipe:
