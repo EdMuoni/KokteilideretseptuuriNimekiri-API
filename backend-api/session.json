@@ -7,6 +7,14 @@
         "type": null,
         "raw_auth": null
     },
-    "cookies": [],
+    "cookies": [
+        {
+            "name": "connect.sid",
+            "value": "s%3A0ePwrzde5ZMnk_Whd5Aw-f1BekaJ1jGg.v2Sati7P%2FkU4Ml6YlaGanjU%2Bl4OghzfY8wXODdxjpLo",
+            "expires": 1770041967,
+            "path": "/",
+            "domain": "localhost"
+        }
+    ],
     "headers": []
 }

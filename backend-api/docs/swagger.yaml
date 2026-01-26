@@ -551,7 +551,7 @@ paths:
                 name: LoginEmail
                 in: path
                 required: true
-    /sessions:
+    /session:
         post:
             tags:
                 - Users
