@@ -128,7 +128,12 @@ async (req,res) => {
 // GET ALL USERS (with optional email filter)
 exports.getAllUsers = async (req, res) => {
   try {
-    // Check for email filter in query parameter OR header
+
+    
+    //const users = await db.users.findAll();
+    //res.status(200).send(users.map(({UserID, DisplayName, IsAdmin}) => {return {UserID, DisplayName, IsAdmin }}))
+
+    // Checks for email filter in query parameter OR header
     const emailFilter = req.query.email || req.headers['loginemail'];
     
     // Build where clause - EMPTY {} means get ALL users
@@ -170,7 +175,7 @@ exports.getAllUsers = async (req, res) => {
 exports.getByID = async (req, res) => {
   try {
     const user = await getUser(req, res);
-    if (!user) return; // Error already sent by getUser
+    if (!user) return; 
     
     return res.status(200).json({
       UserID: user.UserID,
@@ -179,7 +184,9 @@ exports.getByID = async (req, res) => {
       EmailAddress: user.EmailAddress,
       IsAdmin: user.IsAdmin
     });
-  } catch (error) {
+  } 
+  
+    catch (error) {
     console.error('Error fetching user by ID:', error);
     return res.status(500).json({
       error: 'Failed to fetch user',
