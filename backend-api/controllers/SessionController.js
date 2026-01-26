@@ -72,5 +72,5 @@ async (req, res) => {
     )
 
     res.clearCookie("connect.sid")
-    res.status(200).send({ok:true})
+    res.status(200).send({ok:"Session successfully eliminated."})
 }
