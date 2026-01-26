@@ -312,7 +312,7 @@ paths:
                     type: string
             responses:
                 '200':
-                    description: Returns all details of a given User
+                    description: Returns all details of a certain UserRating
                     schema:
                         type: array
                         items:

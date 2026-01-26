@@ -125,17 +125,30 @@ async (req,res) => {
     .location(`${Utilities.getBaseURL(req)}/users/${resultingUser.UserID}`).sendStatus(201);
 }
 
-// GET ALL USERS
-
+// GET ALL USERS (with optional email filter)
 exports.getAllUsers = async (req, res) => {
   try {
+    // Check for email filter in query parameter OR header
+    const emailFilter = req.query.email || req.headers['loginemail'];
+    
+    // Build where clause - EMPTY {} means get ALL users
+    let whereClause = {};
+    if (emailFilter) {
+      whereClause.EmailAddress = emailFilter;
+    }
 
-    // Fetch all users from database
-    const users = await db.users.findAll();
+    // Fetch users with optional filter
+    const users = await db.users.findAll({
+      where: whereClause,
+      attributes: ['UserID', 'FullName', 'UserName', 'IsAdmin', 'EmailAddress']
+    });
 
-    // If no users found, return empty array
-    if (!users || users.length === 0) {
-      return res.status(200).json([]);
+    // If email was provided but no users found
+    if (emailFilter && users.length === 0) {
+      return res.status(404).json({ 
+        error: 'User not found',
+        email: emailFilter 
+      });
     }
 
     // Map users to return only specific fields
@@ -143,28 +156,39 @@ exports.getAllUsers = async (req, res) => {
       return { UserID, FullName, UserName, IsAdmin };
     });
 
-    // Return success with user list
     return res.status(200).json(userList);
-    } catch (error) {  
+  } catch (error) {  
     console.error("Error fetching users:", error);
-
-    // Return error response
     return res.status(500).send({ 
       error: "Failed to fetch users",
-      details: error.message });
-    }
+      details: error.message 
+    });
+  }
 };
 
-
 // GET USER BY ID
-
-exports.getByID = 
-async (req,res) => {
+exports.getByID = async (req, res) => {
+  try {
     const user = await getUser(req, res);
-}
+    if (!user) return; // Error already sent by getUser
+    
+    return res.status(200).json({
+      UserID: user.UserID,
+      FullName: user.FullName,
+      UserName: user.UserName,
+      EmailAddress: user.EmailAddress,
+      IsAdmin: user.IsAdmin
+    });
+  } catch (error) {
+    console.error('Error fetching user by ID:', error);
+    return res.status(500).json({
+      error: 'Failed to fetch user',
+      details: error.message
+    });
+  }
+};
 
-const getUser = 
-async (req, res) => {
+const getUser = async (req, res) => {
     const userID = req.params.UserID;
     const user = await db.users.findByPk(userID);
     if (!user) {
@@ -173,3 +197,27 @@ async (req, res) => {
     }
     return user;
 }
+
+// GET USER BY EMAIL
+exports.getUserByEmail = async (req, res) => {
+  try {
+    const loginEmail = req.params.LoginEmail;
+    
+    const user = await db.users.findOne({
+      where: { EmailAddress: loginEmail },
+      attributes: ['UserID', 'FullName', 'UserName', 'IsAdmin', 'EmailAddress']
+    });
+    
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    
+    return res.status(200).json(user);
+  } catch (error) {
+    console.error('Error fetching user by email:', error);
+    return res.status(500).json({ 
+      error: 'Failed to fetch user',
+      details: error.message 
+    });
+  }
+};
