@@ -225,7 +225,7 @@ paths:
             parameters:
                 -
                     name: body
-                    description: The <UserRating> that is to be created.
+                    description: User gives comment and rating about given recipe.
                     schema:
                         $ref: '#/definitions/new-UserRating'
                     in: body
@@ -238,10 +238,10 @@ paths:
                     examples:
                         application/json:
                             -
-                                UserID: 019b1e0e-7034-70bd-a5dc-4d69c3818e49
-                                RecipeID: ee9cb6f9-ca98-4666-8e9b-1153e4ffa32f
-                                Score: '4.8'
-                                Comment: Best Cocktail Recipe ever
+                                UserID: 019bc766-d172-77fd-803a-1bf46ba9b884
+                                RecipeID: 4c523d71-01be-48b2-bada-562b737ed69e
+                                UserScore: '4.8'
+                                UserComment: Best Cocktail Recipe ever
                 '400':
                     description: >-
                         Sends code 400 when request body missing any or multiple of the required parameters
@@ -312,18 +312,20 @@ paths:
                     type: string
             responses:
                 '200':
-                    description: Returns all details of a given User
+                    description: Returns all details of a certain UserRating
                     schema:
                         type: array
                         items:
                             type: string
                     examples:
-                        application/json:
-                            -
-                                UserID: 019b1e0e-7034-70bd-a5dc-4d69c3818e49
-                                RecipeID: ee9cb6f9-ca98-4666-8e9b-1153e4ffa32f
-                                Score: '4.8'
-                                Comment: Best Cocktail Recipe ever
+                        application/json: |4
+
+                               {
+                                    "UserID": "019bc767-0e18-746f-9741-f66ae5d01483",
+                                    "RecipeID": "d5c9b567-6782-44cb-8b33-694ac1927f27",
+                                    "UserScore": "4.8",
+                                    "UserComment": "Best Cocktail Recipe ever"
+                                }
                 '400':
                     description: Invalid request syntax.
                     schema:
@@ -374,9 +376,14 @@ paths:
                         items:
                             type: string
                     examples:
-                        application/json:
-                            UserScore: '3'
-                            UserComment: Recipe is good but need some changes
+                        application/json: |4
+
+                                {
+                                    "UserID": "019bc767-0e18-746f-9741-f66ae5d01483",
+                                    "RecipeID": "d5c9b567-6782-44cb-8b33-694ac1927f27",
+                                    "UserScore": "4.8",
+                                    "UserComment": "Best Cocktail Recipe ever"
+                                }
                 '400':
                     description: Returns bad request when one or multiple parameters are missing
                     schema:
@@ -429,6 +436,222 @@ paths:
                                 error: Id not found
             summary: Delete a registered user <UserRating> from the app
             description: Deletes and entry from the app to never be seen again.
+    /auth/register:
+        post:
+            tags:
+                - Users
+            parameters:
+                -
+                    name: body
+                    description: Registering new User
+                    schema:
+                        $ref: '#/definitions/new-User'
+                    in: body
+                    required: true
+            responses:
+                '201':
+                    description: Send 201 when new <User> is successfully added into the database
+                    schema:
+                        type: array
+                        items:
+                            type: string
+                    examples:
+                        application/json:
+                            FullName: MyName LastName
+                            EmailAddress: a@a.com
+                            PasswordHASH: abc123
+                            PhoneNumber2FA: 12 23423 23423
+                            UserName: KoooliKoll
+                            IsAdmin: false
+                '400':
+                    description: 'Missing some parameter, please review your request data.'
+                    schema:
+                        $ref: '#/definitions/error'
+                    examples:
+                        application/json:
+                            FullName: MyName LastName
+                            EmailAddress: ''
+                            PasswordHASH: ''
+                            PhoneNumber2FA: 12 23423 23423
+                            UserName: KoooliKoll
+                            IsAdmin: false
+                '409':
+                    description: Current email/username is in use.
+                    schema:
+                        $ref: '#/definitions/error'
+                    examples:
+                        application/json:
+                            -
+                                FullName: MyName LastName
+                                EmailAddress: a@a.com
+                                PasswordHASH: abc123
+                                PhoneNumber2FA: 12 23423 23423
+                                UserName: KoooliKoll
+                                IsAdmin: false
+                            -
+                                FullName: MyName LastName
+                                EmailAddress: b@b.com
+                                PasswordHASH: abc123
+                                PhoneNumber2FA: 12 23423 23423
+                                UserName: KoooliKoll
+                                IsAdmin: false
+            summary: Registers a new <User> into the app
+            description: 'Creates a new <User> instance with its required details, for further usage.'
+    '/auth/{LoginEmail}':
+        get:
+            tags:
+                - Users
+                - Auth
+            parameters:
+                -
+                    name: LoginEmail
+                    description: Email by which the user is logging in
+                    in: path
+                    required: true
+                    type: string
+            responses:
+                '200':
+                    description: Returns 200 when User puts valid email
+                    schema:
+                        type: array
+                        items:
+                            type: string
+                    examples:
+                        application/json:
+                            -
+                                Email: Email was correct
+                '400':
+                    description: Return 400 when user puts wrong email.
+                    schema:
+                        $ref: '#/definitions/error'
+                    examples:
+                        application/json:
+                            -
+                                Error: Incorrect Email
+                '404':
+                    description: Return 404 when user by this email does not exist.
+                    schema:
+                        $ref: '#/definitions/error'
+                    examples:
+                        application/json: |
+                            [
+                                   {(Error:"User by this Email does not exist")}
+                            ]
+            summary: Get a user by their Email adress
+        parameters:
+            -
+                name: LoginEmail
+                in: path
+                required: true
+    /sessions:
+        post:
+            tags:
+                - Users
+                - Auth
+            parameters:
+                -
+                    name: body
+                    description: Data of the user
+                    schema:
+                        $ref: '#/definitions/login-User'
+                    in: body
+                    required: true
+            responses:
+                '200':
+                    description: Returns selected user data for the site functioning
+                    schema:
+                        type: array
+                        items:
+                            type: string
+                    examples:
+                        application/json:
+                            UserID: 019bb2c4-630f-777b-9413-a826435bf3b8
+                            DisplayName: KoooliKoll
+                            EmailAddress: a@a.co
+                            IsAdmin: false
+                '400':
+                    description: Returns bad request when parameters are missing.
+                    schema:
+                        $ref: '#/definitions/error'
+                '401':
+                    description: 'Returns "Access Denied" when incorrect data is inserted. '
+                    schema:
+                        $ref: '#/definitions/error'
+                    examples:
+                        application/json:
+                            -
+                                error: Password mismatch
+                '404':
+                    description: Returns response when user is not found
+                    schema:
+                        $ref: '#/definitions/error'
+                    examples:
+                        application/json:
+                            -
+                                error: User not found
+            summary: Make session get cookie
+            description: Inserts a sesion object into database and gives user a cookie
+    /sessions/me:
+        get:
+            tags:
+                - Users
+                - Auth
+            responses:
+                '200':
+                    description: 'Respond 200, when refresh if login was successful'
+                    schema:
+                        $ref: '#/definitions/loggedIn-User'
+                    examples:
+                        application/json:
+                            UserID: 019bb2c4-630f-777b-9413-a826435bf3b8
+                            FullName: KoooliKoll
+                            EmailAddress: a@a.co
+                            IsAdmin: false
+                '401':
+                    description: 'Returns 401, when reauthentification of User was unsuccessful'
+                    schema:
+                        $ref: '#/definitions/error'
+                    examples:
+                        application/json:
+                            -
+                                error: 'Session expired, please log in again.'
+            summary: Endpoint to refresh login.
+    /auth/logout:
+        delete:
+            tags:
+                - Users
+                - Auth
+            responses:
+                '200':
+                    description: Responds 200 OK when removal of session and logout of the user is successful
+                    schema:
+                        type: array
+                        items:
+                            type: string
+                    examples:
+                        application/json: |-
+                            [
+                                [
+                                    "ok":"true"
+                                ]
+                            ]
+                '401':
+                    description: 'Response 401 when User is trying to log out, without being logged in'
+                    schema:
+                        $ref: '#/definitions/error'
+                    examples:
+                        application/json:
+                            -
+                                error: User is not logged in
+                '500':
+                    description: 'Response 500, when attempting to delete uncaught error occures'
+                    schema:
+                        $ref: '#/definitions/error'
+                    examples:
+                        application/json:
+                            -
+                                error: 'Server error, please hold.'
+            summary: Remove a session when the on User requests
 definitions:
     new-Recipe:
         title: Root Type for new-Recipe
@@ -491,5 +714,31 @@ definitions:
             Comment:
                 type: string
         example:
-            UserScore: '3'
-            UserComment: Recipe is good but need some changes
+            UserID: 019bc767-0e18-746f-9741-f66ae5d01483
+            RecipeID: d5c9b567-6782-44cb-8b33-694ac1927f27
+            UserScore: '4.8'
+            UserComment: Best Cocktail Recipe ever
+    login-User:
+        title: Root Type for login-User
+        description: Data that the User provides upon an attempt to login
+        type: object
+        properties:
+            Email:
+                type: string
+            Password:
+                type: string
+        example:
+            Email: abc@abc.com
+            Password: abc123
+    loggedIn-User:
+        title: Root Type for leggedIn-User
+        description: 'Data of the user, that is returned upon successful new session, or reauthenticating old session'
+        type: object
+        properties:
+            UserID:
+                type: string
+        example:
+            UserID: 019bb2c4-630f-777b-9413-a826435bf3b8
+            FullName: KoooliKoll
+            EmailAddress: a@a.co
+            IsAdmin: false
