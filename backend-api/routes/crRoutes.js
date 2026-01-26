@@ -39,18 +39,14 @@ module.exports = (app) => {
     app.route("/auth/:LoginEmail")
         .get(UsersController.getUserByEmail)
 
-    // SESSION ROUTES
-    // Create new session (login)
-    app.route("/session")
-        .post(SessionController.newSession)
-    
+    // SESSION ROUTES 
     // Check current session (re-authenticate)
     app.route("/sessions/me")
         .get(SessionController.reAuthenticate)
     
-    // Logout (destroy session)
-    // app.route("/auth/logout")
-    //     .delete(SessionController.removeSession)
+    //Logout (destroy session)
+    app.route("/auth/logout")
+        .delete(SessionController.removeSession)
 
     // USER RATINGS
     app.route("/UserRatings")
