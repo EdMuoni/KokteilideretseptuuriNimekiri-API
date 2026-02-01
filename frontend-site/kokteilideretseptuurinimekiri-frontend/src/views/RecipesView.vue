@@ -13,7 +13,7 @@ export default {
   // created() runs automatically when the component is created
   async created() {
     this.allRecipes = await (
-      await fetch("http://localhost:8080/recipes")
+      await fetch("http://localhost:8081/recipes")
     ).json();
   },
 };

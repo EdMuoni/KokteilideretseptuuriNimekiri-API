@@ -35,7 +35,7 @@ export default {
   methods: {
     async getDetails() {
       this.thisRecipe = await (
-        await fetch(`http://localhost:8080/recipes/${this.seekID}`)
+        await fetch(`http://localhost:8081/recipes/${this.seekID}`)
       ).json();
     },
   },
