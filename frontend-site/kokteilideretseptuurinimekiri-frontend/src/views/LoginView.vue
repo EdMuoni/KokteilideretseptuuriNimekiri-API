@@ -44,7 +44,7 @@
 
                 <!-- Submit Button -->
                 <button type="submit" class="btn-primary" :disabled="loading">
-                    {{ loading ? 'Logis...' : 'Login in' }}
+                    {{ loading ? 'Logging in...' : 'Login' }}
                 </button>
             </form>
 
@@ -57,8 +57,14 @@
 </template>
 
 <script>
+import { useAuthStore } from '@/store/auth'
+
 export default {
     name: 'LoginView',
+    setup() {
+        const authStore = useAuthStore()
+        return { authStore }
+    },
     data() {
         return {
             formData: {
@@ -77,18 +83,37 @@ export default {
             this.loading = true;
 
             try {
-                // Temporary simulation
-                await new Promise(resolve => setTimeout(resolve, 1000));
-                
-                this.successMessage = 'Login was accessful!';
-                
-                // Moving user to recipes page after successful login
-                setTimeout(() => {
-                    this.$router.push('/recipes');
-                }, 1500);
+                // Call backend login API
+                const response = await fetch('http://localhost:8080/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(this.formData)
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    // Login successful
+                    this.successMessage = 'Login successful! Redirecting...';
+                    
+                    // Store authentication data
+                    this.authStore.setAuth(data.token, data.user);
+                    
+                    // Redirect to recipes page after 1 second
+                    setTimeout(() => {
+                        this.$router.push('/recipes');
+                    }, 1000);
+
+                } else {
+                    // Login failed
+                    this.errorMessage = data.error || 'Login failed. Please check your credentials.';
+                }
 
             } catch (error) {
-                this.errorMessage = 'Login failed. Please check your credentials.';
+                console.error('Login error:', error);
+                this.errorMessage = 'Connection error. Please check if the backend is running.';
             } finally {
                 this.loading = false;
             }
@@ -113,13 +138,13 @@ export default {
 }
 
 .login-card {
-    background: rgba(255, 255, 255, 0.95); /* Slight transparency */
+    background: rgba(255, 255, 255, 0.95);
     border-radius: 20px;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
     padding: 45px;
     max-width: 450px;
     width: 100%;
-    backdrop-filter: blur(10px); /* Glass-morphism effect */
+    backdrop-filter: blur(10px);
 }
 
 .login-card h1 {
@@ -239,5 +264,4 @@ export default {
     color: #764ba2;
     text-decoration: underline;
 }
-
 </style>

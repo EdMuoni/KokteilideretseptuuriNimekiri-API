@@ -1,99 +1,83 @@
-import { createRouter, createWebHashHistory } from "vue-router";
-import HomeView from "../views/HomeView.vue";
+import { createRouter, createWebHistory } from 'vue-router'
+import { useAuthStore } from '@/store/auth'
+import HomeView from '../views/HomeView.vue'
+import AboutView from '../views/AboutView.vue'
+import LoginView from '../views/LoginView.vue'
+import RegisterView from '../views/RegisterView.vue'
+import RecipesView from '../views/RecipesView.vue'
+import SingleRecipeView from '../views/SingleRecipeView.vue'
 
 const routes = [
   {
-    path: "/",
-    name: "home",
-    component: HomeView,
-    meta: { requiresAuth: false }
+    path: '/',
+    name: 'home',
+    component: HomeView
   },
   {
-    path: "/about",
-    name: "about",
-    component: () =>
-      import(/* webpackChunkName: "about" */ "../views/AboutView.vue"),
-    meta: { requiresAuth: false }
+    path: '/about',
+    name: 'about',
+    component: AboutView
   },
   {
-    path: "/login",
-    name: "login",
-    component: () =>
-      import(/* webpackChunkName: "login" */ "../views/LoginView.vue"),
-    meta: { requiresAuth: false, guestOnly: true }
+    path: '/login',
+    name: 'login',
+    component: LoginView,
+    // Only accessible when NOT logged in
+    meta: { guestOnly: true } 
   },
   {
-    path: "/register",
-    name: "register",
-    component: () =>
-      import(/* webpackChunkName: "register" */ "../views/RegisterView.vue"),
-    meta: { requiresAuth: false, guestOnly: true }
+    path: '/register',
+    name: 'register',
+    component: RegisterView,
+    // Only accessible when NOT logged in
+    meta: { guestOnly: true } 
   },
   {
-    path: "/recipes",
-    name: "recipes",
-    component: () => import("../views/RecipesView.vue"),
-
-    // PROTECTED ROUTE
+    path: '/recipes',
+    name: 'recipes',
+    component: RecipesView,
+    // Requires authentication
     meta: { requiresAuth: true } 
   },
   {
-    path: "/recipe/:seekID",
-    name: "recipe",
-    component: () => import("../views/SingleRecipeView.vue"),
-    props: (route) => {
-      return { seekID: String(route.params.seekID) };
-    },
-
-    //  PROTECTED ROUTE
-    meta: { requiresAuth: true } 
-  },
-];
+    path: '/recipes/:recipeID',
+    name: 'recipe',
+    component: SingleRecipeView,
+    // Requires authentication
+    meta: { requiresAuth: true }
+  }
+]
 
 const router = createRouter({
-  history: createWebHashHistory(),
-  routes,
-});
+  history: createWebHistory(process.env.BASE_URL),
+  routes
+})
 
-// NAVIGATION GUARD - Protects routes!
+// Navigation guard
 router.beforeEach((to, from, next) => {
-  // Check if user is logged in
-  const isLoggedIn = checkAuth();
+  const authStore = useAuthStore()
   
-  console.log('Navigation Guard:', {
-    going_to: to.path,
-    requires_auth: to.meta.requiresAuth,
-    is_logged_in: isLoggedIn
-  });
+  // Check if route requires authentication
+  if (to.meta.requiresAuth) {
+    if (!authStore.isAuthenticated) {
+      // Not authenticated, redirect to login
+      return next({
+        name: 'login',
+        query: { redirect: to.fullPath } // Save the attempted URL
+      })
+    }
+  }
   
-  // If route requires authentication and user is NOT logged in
-  if (to.meta.requiresAuth && !isLoggedIn) {
-    console.log(' Access denied - redirecting to login');
-    // Redirect to login page
-    next({
-      name: 'login',
-      query: { redirect: to.fullPath } 
-    });
+  // Check if route is guest only (login/register pages)
+  if (to.meta.guestOnly) {
+    if (authStore.isAuthenticated) {
+      // Already authenticated, redirect to recipes
+      return next({ name: 'recipes' })
+    }
   }
+  
+  // Allow navigation
+  next()
+})
 
-  // If route is guest-only (login/register) and user IS logged in
-  else if (to.meta.guestOnly && isLoggedIn) {
-    console.log(' Already logged in - redirecting to recipes');
-    // Redirect to recipes page
-    next({ name: 'recipes' });
-  }
-  // Otherwise, allow navigation
-  else {
-    console.log(' Access granted');
-    next();
-  }
-});
-
-// Helper function to check if user is authenticated
-function checkAuth() {
-  // Check if user session exists in localStorage
-  const userSession = localStorage.getItem('user');
-  return userSession !== null && userSession !== undefined;
-}
-
-export default router;
+export default router

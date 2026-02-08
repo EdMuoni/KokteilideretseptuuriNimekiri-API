@@ -3,9 +3,7 @@ const {db} = require('../db');
 const Utilities = require('./Utilities');
 const UUID = require('uuid');
 
-// ========================================
 // CREATE - Add a new rating
-// ========================================
 exports.create = async (req, res) => {
     if (!req.body.UserScore || !req.body.UserComment) {
         return res.status(400).send({
@@ -42,9 +40,7 @@ exports.create = async (req, res) => {
     }
 };
 
-// ========================================
 // GET ALL - Get all ratings
-// ========================================
 exports.getAll = async (req, res) => {
     try {
         const ratings = await db.userRatings.findAll({
@@ -66,9 +62,7 @@ exports.getAll = async (req, res) => {
     }
 };
 
-// ========================================
 // GetByID - Get rating by ID
-// ========================================
 exports.getById = async (req, res) => {
     try {
         const rating = await db.userRatings.findByPk(req.params.UserRatingID, {
@@ -95,9 +89,7 @@ exports.getById = async (req, res) => {
     }
 };
 
-// ========================================
 // UPDATE - Modify a UserRating details
-// ========================================
 exports.update = async (req, res) => {
     try {
         const rating = await db.userRatings.findByPk(req.params.UserRatingID);
@@ -122,9 +114,7 @@ exports.update = async (req, res) => {
     }
 };
 
-// ========================================
 // DELETE - Remove a UserRating
-// ========================================
 exports.delete = async (req, res) => {
     try {
         const rating = await db.userRatings.findByPk(req.params.UserRatingID);

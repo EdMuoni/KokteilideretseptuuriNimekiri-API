@@ -124,8 +124,14 @@
 </template>
 
 <script>
+import { useAuthStore } from '@/store/auth'
+
 export default {
   name: 'RegisterView',
+  setup() {
+    const authStore = useAuthStore()
+    return { authStore }
+  },
   data() {
     return {
       // Form data object matching backend API requirements
@@ -134,8 +140,7 @@ export default {
         EmailAddress: '',
         UserName: '',
         PasswordHASH: '',
-        PhoneNumber2FA: '',
-        IsAdmin: false 
+        PhoneNumber2FA: ''
       },
       confirmPassword: '', 
       loading: false, 
@@ -180,9 +185,8 @@ export default {
           // Registration successful
           this.successMessage = 'Registration successful! Redirecting...';
 
-          // Save JWT token and user data to localStorage
-          localStorage.setItem('token', data.token);
-          localStorage.setItem('user', JSON.stringify(data.user));
+          // Store authentication data using auth store
+          this.authStore.setAuth(data.token, data.user);
 
           // Redirect to recipes page after 1.5 seconds
           setTimeout(() => {
@@ -222,24 +226,28 @@ export default {
 }
 
 .register-card {
-  background: rgb(193, 166, 207);
-  border-radius: 16px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-  padding: 40px;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  padding: 45px;
   max-width: 500px;
   width: 100%;
+  backdrop-filter: blur(10px);
 }
 
 .register-card h1 {
   margin-bottom: 10px;
   color: #2c3e50;
   font-size: 32px;
+  text-align: center;
+  font-weight: 700;
 }
 
 .subtitle {
-  color: #666;
+  color: #555;
   margin-bottom: 30px;
   font-size: 16px;
+  text-align: center;
 }
 
 .error-message {
@@ -288,6 +296,7 @@ export default {
   font-size: 16px;
   transition: all 0.3s;
   font-family: inherit;
+  background: white;
 }
 
 .form-group input:focus {
@@ -321,24 +330,22 @@ export default {
 
 .btn-primary:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 5px 20px rgba(102, 126, 234, 0.5);
 }
 
-/* Disabled button state */
 .btn-primary:disabled {
   background: #ccc;
   cursor: not-allowed;
   transform: none;
 }
 
-/* Login link container */
 .login-link {
   margin-top: 20px;
   text-align: center;
-  color: #666;
+  color: #555;
+  font-size: 14px;
 }
 
-/* Login link styling */
 .login-link a {
   color: #667eea;
   text-decoration: none;
@@ -346,10 +353,8 @@ export default {
   transition: color 0.3s;
 }
 
-/* Login link hover effect */
 .login-link a:hover {
   color: #764ba2;
   text-decoration: underline;
 }
-
 </style>

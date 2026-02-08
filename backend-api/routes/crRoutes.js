@@ -24,7 +24,7 @@ module.exports = (app) => {
     .delete(UsersController.delete)
 
     app.post("/auth/register",UsersController.register)
-    //app.post("/auth/login",UsersController.login)
+    app.post("/auth/login",UsersController.login)
     
     app.route("/UserRatings")
     .post(UserRatingsController.create)

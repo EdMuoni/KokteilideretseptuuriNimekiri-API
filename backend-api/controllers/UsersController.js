@@ -97,6 +97,65 @@ exports.register = async (req, res) => {
     }
 };
 
+//  Logging in user (auth)
+
+exports.login = async (req, res) => {
+    try {
+        const { email, password } = req.body;
+
+        if (!email || !password) {
+            return res.status(400).json({
+                error: 'Email and password are required'
+            });
+        }
+
+        const user = await db.users.findOne({
+            where: { EmailAddress: email }
+        });
+
+        if (!user) {
+            return res.status(401).json({
+                error: 'Invalid email or password'
+            });
+        }
+
+        const isPasswordValid = await Utilities.letMeIn(password, user.PasswordHASH);
+
+        if (!isPasswordValid) {
+            return res.status(401).json({
+                error: 'Invalid email or password'
+            });
+        }
+
+        const token = jwt.sign(
+            {
+                UserID: user.UserID,
+                IsAdmin: user.IsAdmin
+            },
+            process.env.JWT_SECRET,
+            { expiresIn: '24h' }
+        );
+
+        return res.status(200).json({
+            message: 'Login successful',
+            token,
+            user: {
+                UserID: user.UserID,
+                FullName: user.FullName,
+                EmailAddress: user.EmailAddress,
+                UserName: user.UserName,
+                IsAdmin: user.IsAdmin
+            }
+        });
+
+    } catch (error) {
+        console.error('Login error:', error);
+        return res.status(500).json({
+            error: 'Login failed'
+        });
+    }
+};
+
 // CREATE - Add a new user
 exports.create =
 async (req,res) => {
@@ -179,9 +238,7 @@ exports.getByID = async (req, res) => {
     }
 };
 
-// ========================================
 // UPDATE - Updates a user's details
-// ========================================
 exports.update = async (req, res) => {
     try {
         const user = await db.users.findByPk(req.params.UserID);
