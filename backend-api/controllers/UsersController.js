@@ -1,173 +1,130 @@
-const {db} = require('../db')
-const Utilities = require('./Utilities')
-const UUID = require('uuid')
-const jwt = require('jsonwebtoken');
+const { v4: uuidv4 } = require('uuid');
+const bcrypt = require('bcrypt');
 
-// REGISTER NEW USER
-exports.register = async (req, res) => {
+
+exports.getByID = async (req, res) => {
     try {
-        const{
-            FullName,
-            EmailAddress,
-            PasswordHASH,
-            UserName,
-            PhoneNumber2FA
-        } = req.body;
-    // Validates required fields
-        if (
-            !FullName || 
-            !EmailAddress || 
-            !PasswordHASH || 
-            !UserName) {
-        return res.status(400).json({
-            error: 'Missing required fields'
+        const user = await db.Users.findByPk(req.params.UserID);
+
+        if (!user) {
+            return res.status(404).json({ error: "User not found" });
+        }
+
+        // Return user data without password hash (security!)
+        return res.status(200).json({
+            UserID: user.UserID,
+            FullName: user.FullName,
+            EmailAddress: user.EmailAddress,
+            UserName: user.UserName,
+            PhoneNumber2FA: user.PhoneNumber2FA,
+            IsAdmin: user.IsAdmin
         });
+    } catch (error) {
+        console.error('Error fetching user:', error);
+        return res.status(500).json({
+            error: 'Failed to fetch user',
+            details: error.message
+        });
+    }
+};
+
+
+
+exports.update = async (req, res) => {
+    try {
+        const user = await db.Users.findByPk(req.params.UserID);
+
+        if (!user) {
+            return res.status(404).json({ error: "User not found" });
         }
-            // Checks if email already exists
-            const emailExists = await db.users.findOne({
-            where: { EmailAddress }
-            });
 
-            if (emailExists) {
-            return res.status(409).json({
-                error: 'Email already in use'
+        // Validating required fields
+        const { FullName, EmailAddress, UserName, PhoneNumber2FA, IsAdmin } = req.body;
+
+        if (!FullName || !EmailAddress || !UserName) {
+            return res.status(400).json({
+                error: "Missing required parameters. FullName, EmailAddress, and UserName are required."
             });
+        }
+
+        // Checks if email is already taken by another user
+        const existingEmail = await db.Users.findOne({
+            where: {
+                EmailAddress: EmailAddress,
+                UserID: { [db.Sequelize.Op.ne]: req.params.UserID }
             }
+        });
 
-            // Checks if username already exists
-            const usernameExists = await db.users.findOne({
-            where: { UserName }
-            });
+        if (existingEmail) {
+            return res.status(409).json({ error: "Email address is already in use by another user." });
+        }
 
-            if (usernameExists) {
-            return res.status(409).json({
-                error: 'Username already in use'
-            });
+        // Checks if username is already taken by another user
+        const existingUsername = await db.Users.findOne({
+            where: {
+                UserName: UserName,
+                UserID: { [db.Sequelize.Op.ne]: req.params.UserID }
             }
+        });
 
-            // Hash password
-            const hashedPassword = await Utilities.gimmePassword(Password);
+        if (existingUsername) {
+            return res.status(409).json({ error: "Username is already in use by another user." });
+        }
 
-            // Creating user object
-            const newUser = {
-            UserID: UUID.v7(),
+        // During password update, hashes the new password
+        let updateData = {
             FullName,
             EmailAddress,
-            PasswordHASH: hashedPassword,
             UserName,
-            IsAdmin: false
-            };
+            PhoneNumber2FA: PhoneNumber2FA || user.PhoneNumber2FA,
+            IsAdmin: IsAdmin !== undefined ? IsAdmin : user.IsAdmin
+        };
 
-            if (PhoneNumber2FA) {
-            newUser.PhoneNumber2FA = PhoneNumber2FA;
-            }
-
-            // Saving user to database
-            const createdUser = await db.users.create(newUser);
-
-            // Creating JWT token
-            const token = jwt.sign(
-            {
-                UserID: createdUser.UserID,
-                IsAdmin: createdUser.IsAdmin
-            },
-            process.env.JWT_SECRET,
-            { expiresIn: '1h' }
-            );
-
-            // Returning response for frontend
-            return res.status(201).json({
-            message: 'User registered successfully',
-            token,
-            user: {
-                UserID: createdUser.UserID,
-                FullName: createdUser.FullName,
-                EmailAddress: createdUser.EmailAddress,
-                UserName: createdUser.UserName,
-                IsAdmin: createdUser.IsAdmin
-            }
-            });
-
+        if (req.body.PasswordHASH) {
+            const salt = await bcrypt.genSalt(10);
+            updateData.PasswordHASH = await bcrypt.hash(req.body.PasswordHASH, salt);
         }
-        catch  (error) {
-            console.error('Register error:', error);
-            return res.status(500).json({
-            error: 'Registration failed'
-            });
-    }
-};
 
-exports.create =
-async (req,res) => {
-    if (
-        !req.body.FullName ||
-        !req.body.EmailAddress ||
-        !req.body.PasswordHASH ||
-        !req.body.UserName 
-    ){
-        return res.status(400).json({error: 'Missing required fields'});
-    }
-    const newUser = {
-        UserID: UUID.v7(),
-        FullName: req.body.FullName,
-        EmailAddress: req.body.EmailAddress,
-        PasswordHASH: (await Utilities.gimmePassword(req.body.PasswordHASH)).toString(),
-        UserName: req.body.UserName
-    }
-    
-        if(req.body.PhoneNumber2FA != null){
-        newUser.PhoneNumber2FA = Utilities.gimmePassword(req.body.PhoneNumber2FA).toString();}
-    
-    const resultingUser = await db.users.create(newUser);
-    return res
-    .location(`${Utilities.getBaseURL(req)}/users/${resultingUser.UserID}`).sendStatus(201);
-}
+        // Update the user
+        await user.update(updateData);
 
-// GET ALL USERS
+        // Return updated user data (without password)
+        return res.status(200).json({
+            UserID: user.UserID,
+            FullName: user.FullName,
+            EmailAddress: user.EmailAddress,
+            UserName: user.UserName,
+            PhoneNumber2FA: user.PhoneNumber2FA,
+            IsAdmin: user.IsAdmin
+        });
 
-exports.getAllUsers = async (req, res) => {
-  try {
-
-    // Fetch all users from database
-    const users = await db.users.findAll();
-
-    // If no users found, return empty array
-    if (!users || users.length === 0) {
-      return res.status(200).json([]);
-    }
-
-    // Map users to return only specific fields
-    const userList = users.map(({ UserID, FullName, UserName, IsAdmin }) => {
-      return { UserID, FullName, UserName, IsAdmin };
-    });
-
-    // Return success with user list
-    return res.status(200).json(userList);
-    } catch (error) {  
-    console.error("Error fetching users:", error);
-
-    // Return error response
-    return res.status(500).send({ 
-      error: "Failed to fetch users",
-      details: error.message });
+    } catch (error) {
+        console.error('Error updating user:', error);
+        return res.status(500).json({
+            error: 'Failed to update user',
+            details: error.message
+        });
     }
 };
 
 
-// GET USER BY ID
+exports.delete = async (req, res) => {
+    try {
+        const user = await db.Users.findByPk(req.params.UserID);
 
-exports.getByID = 
-async (req,res) => {
-    const user = await getUser(req, res);
-}
+        if (!user) {
+            return res.status(404).json({ error: "User not found" });
+        }
 
-const getUser = 
-async (req, res) => {
-    const userID = req.params.UserID;
-    const user = await db.users.findByPk(userID);
-    if (!user) {
-        res.status(404).json({error: `User with this ID does not exist ${userID}.`});
-        return null;
+        await user.destroy();
+
+        return res.status(204).send(); 
+
+    } catch (error) {
+        console.error('Error deleting user:', error);
+        return res.status(500).json({
+            error: 'Failed to delete user',
+            details: error.message
+        });
     }
-    return user;
-}
+};
