@@ -1,16 +1,174 @@
-const { v4: uuidv4 } = require('uuid');
-const bcrypt = require('bcrypt');
+const {db} = require('../db')
+const Utilities = require('./Utilities')
+const UUID = require('uuid')
+const jwt = require('jsonwebtoken');
 
+// ========================================
+// REGISTER NEW USER (auth)
+// ========================================
+exports.register = async (req, res) => {
+    try {
+        const{
+            FullName,
+            EmailAddress,
+            PasswordHASH,
+            UserName,
+            PhoneNumber2FA
+        } = req.body;
+    // Validates required fields
+        if (
+            !FullName || 
+            !EmailAddress || 
+            !PasswordHASH || 
+            !UserName) {
+        return res.status(400).json({
+            error: 'Missing required fields'
+        });
+        }
+            // Checks if email already exists
+            const emailExists = await db.users.findOne({
+            where: { EmailAddress }
+            });
 
+            if (emailExists) {
+            return res.status(409).json({
+                error: 'Email already in use'
+            });
+            }
+
+            // Checks if username already exists
+            const usernameExists = await db.users.findOne({
+            where: { UserName }
+            });
+
+            if (usernameExists) {
+            return res.status(409).json({
+                error: 'Username already in use'
+            });
+            }
+
+            // Hash password
+            const hashedPassword = await Utilities.gimmePassword(PasswordHASH);
+
+            // Creating user object
+            const newUser = {
+            UserID: UUID.v7(),
+            FullName,
+            EmailAddress,
+            PasswordHASH: hashedPassword,
+            UserName,
+            IsAdmin: false
+            };
+
+            if (PhoneNumber2FA) {
+            newUser.PhoneNumber2FA = PhoneNumber2FA;
+            }
+
+            // Saving user to database
+            const createdUser = await db.users.create(newUser);
+
+            // Creating JWT token
+            const token = jwt.sign(
+            {
+                UserID: createdUser.UserID,
+                IsAdmin: createdUser.IsAdmin
+            },
+            process.env.JWT_SECRET,
+            { expiresIn: '1h' }
+            );
+
+            // Returning response for frontend
+            return res.status(201).json({
+            message: 'User registered successfully',
+            token,
+            user: {
+                UserID: createdUser.UserID,
+                FullName: createdUser.FullName,
+                EmailAddress: createdUser.EmailAddress,
+                UserName: createdUser.UserName,
+                IsAdmin: createdUser.IsAdmin
+            }
+            });
+
+        }
+        catch  (error) {
+            console.error('Register error:', error);
+            return res.status(500).json({
+            error: 'Registration failed'
+            });
+    }
+};
+
+// ========================================
+// CREATE - Add a new user
+// ========================================
+exports.create =
+async (req,res) => {
+    if (
+        !req.body.FullName ||
+        !req.body.EmailAddress ||
+        !req.body.PasswordHASH ||
+        !req.body.UserName 
+    ){
+        return res.status(400).json({error: 'Missing required fields'});
+    }
+    const newUser = {
+        UserID: UUID.v7(),
+        FullName: req.body.FullName,
+        EmailAddress: req.body.EmailAddress,
+        PasswordHASH: (await Utilities.gimmePassword(req.body.PasswordHASH)).toString(),
+        UserName: req.body.UserName
+    }
+    
+        if(req.body.PhoneNumber2FA != null){
+        newUser.PhoneNumber2FA = (await Utilities.gimmePassword(req.body.PhoneNumber2FA)).toString();}
+    
+    const resultingUser = await db.users.create(newUser);
+    return res
+    .location(`${Utilities.getBaseURL(req)}/users/${resultingUser.UserID}`).sendStatus(201);
+}
+
+// ========================================
+// GET ALL USERS
+// ========================================
+exports.getAllUsers = async (req, res) => {
+  try {
+    // Fetches all users from database
+    const users = await db.users.findAll();
+
+    // If no users found, return empty array
+    if (!users || users.length === 0) {
+      return res.status(200).json([]);
+    }
+
+    // Map users to return only specific fields
+    const userList = users.map(({ UserID, FullName, UserName, IsAdmin }) => {
+      return { UserID, FullName, UserName, IsAdmin };
+    });
+
+    // Return success with user list
+    return res.status(200).json(userList);
+    } catch (error) {  
+    console.error("Error fetching users:", error);
+
+    // Return error response
+    return res.status(500).send({ 
+      error: "Failed to fetch users",
+      details: error.message });
+    }
+};
+
+// ========================================
+// GET BY ID - Get a single user
+// ========================================
 exports.getByID = async (req, res) => {
     try {
-        const user = await db.Users.findByPk(req.params.UserID);
+        const user = await db.users.findByPk(req.params.UserID);
 
         if (!user) {
-            return res.status(404).json({ error: "User not found" });
+            return res.status(404).json({ error: `User with this ID does not exist ${req.params.UserID}.` });
         }
 
-        // Return user data without password hash (security!)
         return res.status(200).json({
             UserID: user.UserID,
             FullName: user.FullName,
@@ -28,17 +186,17 @@ exports.getByID = async (req, res) => {
     }
 };
 
-
-
+// ========================================
+// UPDATE - Updates a user's details
+// ========================================
 exports.update = async (req, res) => {
     try {
-        const user = await db.Users.findByPk(req.params.UserID);
+        const user = await db.users.findByPk(req.params.UserID);
 
         if (!user) {
             return res.status(404).json({ error: "User not found" });
         }
 
-        // Validating required fields
         const { FullName, EmailAddress, UserName, PhoneNumber2FA, IsAdmin } = req.body;
 
         if (!FullName || !EmailAddress || !UserName) {
@@ -47,31 +205,28 @@ exports.update = async (req, res) => {
             });
         }
 
-        // Checks if email is already taken by another user
-        const existingEmail = await db.Users.findOne({
+        // Check if email is already taken by another user
+        const existingEmail = await db.users.findOne({
             where: {
                 EmailAddress: EmailAddress,
                 UserID: { [db.Sequelize.Op.ne]: req.params.UserID }
             }
         });
-
         if (existingEmail) {
             return res.status(409).json({ error: "Email address is already in use by another user." });
         }
 
-        // Checks if username is already taken by another user
-        const existingUsername = await db.Users.findOne({
+        // Check if username is already taken by another user
+        const existingUsername = await db.users.findOne({
             where: {
                 UserName: UserName,
                 UserID: { [db.Sequelize.Op.ne]: req.params.UserID }
             }
         });
-
         if (existingUsername) {
             return res.status(409).json({ error: "Username is already in use by another user." });
         }
 
-        // During password update, hashes the new password
         let updateData = {
             FullName,
             EmailAddress,
@@ -81,14 +236,11 @@ exports.update = async (req, res) => {
         };
 
         if (req.body.PasswordHASH) {
-            const salt = await bcrypt.genSalt(10);
-            updateData.PasswordHASH = await bcrypt.hash(req.body.PasswordHASH, salt);
+            updateData.PasswordHASH = (await Utilities.gimmePassword(req.body.PasswordHASH)).toString();
         }
 
-        // Update the user
         await user.update(updateData);
 
-        // Return updated user data (without password)
         return res.status(200).json({
             UserID: user.UserID,
             FullName: user.FullName,
@@ -107,10 +259,12 @@ exports.update = async (req, res) => {
     }
 };
 
-
+// ========================================
+// DELETE - Removes a user
+// ========================================
 exports.delete = async (req, res) => {
     try {
-        const user = await db.Users.findByPk(req.params.UserID);
+        const user = await db.users.findByPk(req.params.UserID);
 
         if (!user) {
             return res.status(404).json({ error: "User not found" });
@@ -118,7 +272,7 @@ exports.delete = async (req, res) => {
 
         await user.destroy();
 
-        return res.status(204).send(); 
+        return res.status(204).send();
 
     } catch (error) {
         console.error('Error deleting user:', error);
