@@ -77,30 +77,32 @@ export default {
       <h1>{{ thisRecipe.Name }}</h1>
       
       <table class="table table-striped">
-        <tr>
-          <td class="label">Recipe ID</td>
-          <td>{{ thisRecipe.RecipeID }}</td>
-        </tr>
+        <tbody>
+          <tr>
+            <td class="label">Recipe ID</td>
+            <td>{{ thisRecipe.RecipeID }}</td>
+          </tr>
 
-        <tr>
-          <td class="label">Name</td>
-          <td>{{ thisRecipe.Name }}</td>
-        </tr>
+          <tr>
+            <td class="label">Name</td>
+            <td>{{ thisRecipe.Name }}</td>
+          </tr>
 
-        <tr>
-          <td class="label">Description</td>
-          <td>{{ thisRecipe.Description }}</td>
-        </tr>
+          <tr>
+            <td class="label">Description</td>
+            <td>{{ thisRecipe.Description }}</td>
+          </tr>
 
-        <tr>
-          <td class="label">Beverage Type</td>
-          <td>{{ thisRecipe.Beverage }}</td>
-        </tr>
+          <tr>
+            <td class="label">Beverage Type</td>
+            <td>{{ thisRecipe.Beverage }}</td>
+          </tr>
 
-        <tr>
-          <td class="label">User Score</td>
-          <td>{{ thisRecipe.UserScore }} / 5</td>
-        </tr>
+          <tr>
+            <td class="label">User Score</td>
+            <td>{{ thisRecipe.UserScore }} / 5</td>
+          </tr>
+        </tbody>
       </table>
     </div>
   </div>
@@ -173,7 +175,7 @@ h1 {
   background: #f8f9fa;
 }
 
-.table-striped tr:nth-child(even) {
+.table-striped tbody tr:nth-child(even) {
   background: #fafafa;
 }
 </style>

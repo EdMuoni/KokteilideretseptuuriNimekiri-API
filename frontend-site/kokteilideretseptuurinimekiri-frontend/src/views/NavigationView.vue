@@ -3,6 +3,14 @@
     <div class="nav-container">
 
       <ul class="nav-menu">
+        <!-- Shows user info and logout when authenticated -->
+        <li v-if="isAuthenticated" class="nav-item user-info">
+          <span class="username">
+            {{ currentUser?.UserName }}
+            <span v-if="isAdmin" class="admin-badge">Administrator</span>
+          </span>
+        </li>
+
         <li class="nav-item">
           <router-link to="/" class="nav-link">Home</router-link>
         </li>
@@ -19,20 +27,15 @@
         <li v-if="!isAuthenticated" class="nav-item">
           <router-link to="/login" class="nav-link">Login</router-link>
         </li>
+
         <li v-if="!isAuthenticated" class="nav-item">
           <router-link to="/register" class="nav-link">Register</router-link>
         </li>
-        
-        <!-- Shows user info and logout when authenticated -->
-        <li v-if="isAuthenticated" class="nav-item user-info">
-          <span class="username">
-            {{ currentUser?.UserName }}
-            <span v-if="isAdmin" class="admin-badge">Admin</span>
-          </span>
-        </li>
+
         <li v-if="isAuthenticated" class="nav-item">
           <button @click="handleLogout" class="nav-link logout-btn">Logout</button>
         </li>
+
       </ul>
     </div>
   </nav>
