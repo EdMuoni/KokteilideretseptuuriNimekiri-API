@@ -102,9 +102,8 @@ export default {
                     this.authStore.setAuth(data.token, data.user);
                     
                     // Redirect to recipes page after 1 second
-                    setTimeout(() => {
-                        this.$router.push('/recipes');
-                    }, 1000);
+                    this.$router.push('/recipes');
+                    
 
                 } else {
                     // Login failed

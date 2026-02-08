@@ -63,7 +63,7 @@ router.beforeEach((to, from, next) => {
       // Not authenticated, redirect to login
       return next({
         name: 'login',
-        query: { redirect: to.fullPath } // Save the attempted URL
+        query: { redirect: to.fullPath } 
       })
     }
   }
