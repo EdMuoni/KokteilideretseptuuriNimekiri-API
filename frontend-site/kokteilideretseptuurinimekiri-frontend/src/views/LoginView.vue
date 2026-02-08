@@ -98,16 +98,13 @@ export default {
 </script>
 
 <style scoped>
-/* Main container with cocktail background */
 .login-container {
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
     padding: 20px;
-    position: relative;
     
-    /* Your cocktail image as background */
     background-image: url('@/assets/wp1989396.png');
     background-size: cover;
     background-position: center;
@@ -115,22 +112,7 @@ export default {
     background-attachment: fixed;
 }
 
-/* Dark overlay */
-.login-container::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.6); /* 60% transparent black layer */
-    z-index: 1;
-}
-
-/* Login card styling */
 .login-card {
-    position: relative;
-    z-index: 2; /* Form stays above the overlay */
     background: rgba(255, 255, 255, 0.95); /* Slight transparency */
     border-radius: 20px;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
@@ -140,7 +122,6 @@ export default {
     backdrop-filter: blur(10px); /* Glass-morphism effect */
 }
 
-/* Main heading */
 .login-card h1 {
     margin-bottom: 10px;
     color: #2c3e50;
@@ -149,7 +130,6 @@ export default {
     font-weight: 700;
 }
 
-/* Subtitle text */
 .subtitle {
     color: #555;
     margin-bottom: 30px;
@@ -157,7 +137,6 @@ export default {
     text-align: center;
 }
 
-/* Error message styling */
 .error-message {
     background: #fee;
     color: #c33;
@@ -168,7 +147,6 @@ export default {
     font-weight: 500;
 }
 
-/* Success message styling */
 .success-message {
     background: #efe;
     color: #2a7;
@@ -179,14 +157,12 @@ export default {
     font-weight: 500;
 }
 
-/* Form container */
 .login-form {
     display: flex;
     flex-direction: column;
     gap: 20px;
 }
 
-/* Form group container */
 .form-group {
     display: flex;
     flex-direction: column;
@@ -194,14 +170,12 @@ export default {
     text-align: left;
 }
 
-/* Form labels */
 .form-group label {
     font-weight: 600;
     color: #2c3e50;
     font-size: 14px;
 }
 
-/* Form inputs */
 .form-group input {
     padding: 12px 16px;
     border: 2px solid #e0e0e0;
@@ -212,20 +186,17 @@ export default {
     background: white;
 }
 
-/* Input focus state */
 .form-group input:focus {
     outline: none;
     border-color: #667eea;
     box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
-/* Disabled input state */
 .form-group input:disabled {
     background: #f5f5f5;
     cursor: not-allowed;
 }
 
-/* Primary button styling */
 .btn-primary {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
@@ -239,20 +210,17 @@ export default {
     margin-top: 10px;
 }
 
-/* Button hover effect */
 .btn-primary:hover:not(:disabled) {
     transform: translateY(-2px);
     box-shadow: 0 5px 20px rgba(102, 126, 234, 0.5);
 }
 
-/* Disabled button state */
 .btn-primary:disabled {
     background: #ccc;
     cursor: not-allowed;
     transform: none;
 }
 
-/* Register link container */
 .register-link {
     margin-top: 20px;
     text-align: center;
@@ -260,7 +228,6 @@ export default {
     font-size: 14px;
 }
 
-/* Register link styling */
 .register-link a {
     color: #667eea;
     text-decoration: none;
@@ -268,24 +235,9 @@ export default {
     transition: color 0.3s;
 }
 
-/* Register link hover effect */
 .register-link a:hover {
     color: #764ba2;
     text-decoration: underline;
 }
 
-/* Responsive design for mobile devices */
-@media (max-width: 600px) {
-    .login-card {
-        padding: 35px 25px;
-    }
-
-    .login-card h1 {
-        font-size: 28px;
-    }
-    
-    .login-container {
-        background-attachment: scroll; 
-    }
-}
 </style>

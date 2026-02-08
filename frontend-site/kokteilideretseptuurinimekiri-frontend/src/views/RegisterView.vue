@@ -208,19 +208,21 @@ export default {
 </script>
 
 <style scoped>
-/* Main container with centered content */
 .register-container {
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 80vh;
+  min-height: 100vh;
   padding: 20px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+
+    background-image: url('@/assets/wp1989396.png');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
 }
 
-/* Registration card with shadow */
 .register-card {
-  background: white;
+  background: rgb(193, 166, 207);
   border-radius: 16px;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
   padding: 40px;
@@ -228,21 +230,18 @@ export default {
   width: 100%;
 }
 
-/* Main heading */
 .register-card h1 {
   margin-bottom: 10px;
   color: #2c3e50;
   font-size: 32px;
 }
 
-/* Subtitle text */
 .subtitle {
   color: #666;
   margin-bottom: 30px;
   font-size: 16px;
 }
 
-/* Error message styling */
 .error-message {
   background: #fee;
   color: #c33;
@@ -253,7 +252,6 @@ export default {
   font-weight: 500;
 }
 
-/* Success message styling */
 .success-message {
   background: #efe;
   color: #2a7;
@@ -264,14 +262,12 @@ export default {
   font-weight: 500;
 }
 
-/* Form container */
 .register-form {
   display: flex;
   flex-direction: column;
   gap: 20px;
 }
 
-/* Form group container */
 .form-group {
   display: flex;
   flex-direction: column;
@@ -279,14 +275,12 @@ export default {
   text-align: left;
 }
 
-/* Form labels */
 .form-group label {
   font-weight: 600;
   color: #2c3e50;
   font-size: 14px;
 }
 
-/* Form inputs */
 .form-group input {
   padding: 12px 16px;
   border: 2px solid #e0e0e0;
@@ -296,26 +290,22 @@ export default {
   font-family: inherit;
 }
 
-/* Input focus state */
 .form-group input:focus {
   outline: none;
   border-color: #667eea;
   box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
-/* Disabled input state */
 .form-group input:disabled {
   background: #f5f5f5;
   cursor: not-allowed;
 }
 
-/* Helper text below inputs */
 .form-group small {
   color: #666;
   font-size: 12px;
 }
 
-/* Primary button styling */
 .btn-primary {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
@@ -329,7 +319,6 @@ export default {
   margin-top: 10px;
 }
 
-/* Button hover effect */
 .btn-primary:hover:not(:disabled) {
   transform: translateY(-2px);
   box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
@@ -363,14 +352,4 @@ export default {
   text-decoration: underline;
 }
 
-/* Responsive design for mobile devices */
-@media (max-width: 600px) {
-  .register-card {
-    padding: 30px 20px;
-  }
-
-  .register-card h1 {
-    font-size: 28px;
-  }
-}
 </style>
