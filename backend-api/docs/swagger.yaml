@@ -260,6 +260,13 @@ paths:
         get:
             tags:
                 - Users
+            parameters:
+                -
+                    name: UserID
+                    description: ID of existing User
+                    in: path
+                    required: true
+                    type: string
             responses:
                 '200':
                     description: Returns all details of a given User
@@ -296,8 +303,10 @@ paths:
             parameters:
                 -
                     name: UserID
+                    description: ID of existing User
                     in: path
                     required: true
+                    type: string
                 -
                     name: body
                     schema:
@@ -339,11 +348,18 @@ paths:
                     examples:
                         application/json:
                             error: Email address is already in use by another user.
-            summary: 'Returns a list of all users, with limited details'
-            description: 'Returns a list of all users, with limited details'
+            summary: Updates details of an existing User
+            description: 'Will change certain details of a given User, based on given UserID'
         delete:
             tags:
                 - Users
+            parameters:
+                -
+                    name: UserID
+                    description: ID of existing User
+                    in: path
+                    required: true
+                    type: string
             responses:
                 '204':
                     description: Returns response code 204 "No Content" when User deletion was successful

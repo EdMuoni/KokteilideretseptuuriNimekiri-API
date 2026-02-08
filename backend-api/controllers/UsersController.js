@@ -3,9 +3,7 @@ const Utilities = require('./Utilities')
 const UUID = require('uuid')
 const jwt = require('jsonwebtoken');
 
-// ========================================
 // REGISTER NEW USER (auth)
-// ========================================
 exports.register = async (req, res) => {
     try {
         const{
@@ -99,9 +97,7 @@ exports.register = async (req, res) => {
     }
 };
 
-// ========================================
 // CREATE - Add a new user
-// ========================================
 exports.create =
 async (req,res) => {
     if (
@@ -128,9 +124,7 @@ async (req,res) => {
     .location(`${Utilities.getBaseURL(req)}/users/${resultingUser.UserID}`).sendStatus(201);
 }
 
-// ========================================
 // GET ALL USERS
-// ========================================
 exports.getAllUsers = async (req, res) => {
   try {
     // Fetches all users from database
@@ -151,16 +145,15 @@ exports.getAllUsers = async (req, res) => {
     } catch (error) {  
     console.error("Error fetching users:", error);
 
-    // Return error response
+    // Returns error response
     return res.status(500).send({ 
       error: "Failed to fetch users",
       details: error.message });
     }
 };
 
-// ========================================
+
 // GET BY ID - Get a single user
-// ========================================
 exports.getByID = async (req, res) => {
     try {
         const user = await db.users.findByPk(req.params.UserID);
@@ -259,9 +252,7 @@ exports.update = async (req, res) => {
     }
 };
 
-// ========================================
 // DELETE - Removes a user
-// ========================================
 exports.delete = async (req, res) => {
     try {
         const user = await db.users.findByPk(req.params.UserID);
@@ -269,6 +260,10 @@ exports.delete = async (req, res) => {
         if (!user) {
             return res.status(404).json({ error: "User not found" });
         }
+        // Deletes all UserRatings belonging to this user first (foreign key constraint)
+        await db.userRatings.destroy({
+            where: { UserID: req.params.UserID }
+        });
 
         await user.destroy();
 

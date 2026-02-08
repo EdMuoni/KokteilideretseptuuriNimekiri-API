@@ -17,11 +17,11 @@ module.exports = (app) => {
     app.route("/users")
     .post(UsersController.create)
     .get(UsersController.getAllUsers)
-    .put(UsersController.update)
-    .delete(UsersController.delete)
 
     app.route("/users/:UserID")
     .get(UsersController.getByID)
+    .put(UsersController.update)
+    .delete(UsersController.delete)
 
     app.post("/auth/register",UsersController.register)
     //app.post("/auth/login",UsersController.login)
