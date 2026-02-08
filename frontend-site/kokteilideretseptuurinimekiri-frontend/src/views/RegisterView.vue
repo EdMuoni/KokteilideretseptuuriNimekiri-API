@@ -124,8 +124,14 @@
 </template>
 
 <script>
+import { useAuthStore } from '@/store/auth'
+
 export default {
   name: 'RegisterView',
+  setup() {
+    const authStore = useAuthStore()
+    return { authStore }
+  },
   data() {
     return {
       // Form data object matching backend API requirements
@@ -134,32 +140,25 @@ export default {
         EmailAddress: '',
         UserName: '',
         PasswordHASH: '',
-        PhoneNumber2FA: '',
-        IsAdmin: false // Always false for new registrations
+        PhoneNumber2FA: ''
       },
-      confirmPassword: '', // Separate field for password confirmation
-      loading: false, // Loading state for button and inputs
-      errorMessage: '', // Error message to display
-      successMessage: '' // Success message to display
+      confirmPassword: '', 
+      loading: false, 
+      errorMessage: '', 
+      successMessage: '' 
     };
   },
   methods: {
-    /**
-     * Handle registration form submission
-     * Validates inputs and sends POST request to backend API
-     */
     async handleRegister() {
       // Clear previous messages
       this.errorMessage = '';
       this.successMessage = '';
 
-      // Validate that passwords match
       if (this.formData.PasswordHASH !== this.confirmPassword) {
         this.errorMessage = 'Passwords do not match!';
         return;
       }
 
-      // Validate password strength (lowercase, uppercase, number, min 8 chars)
       const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
       if (!passwordRegex.test(this.formData.PasswordHASH)) {
         this.errorMessage = 'Password must contain at least one lowercase letter, one uppercase letter, and one number!';
@@ -186,9 +185,8 @@ export default {
           // Registration successful
           this.successMessage = 'Registration successful! Redirecting...';
 
-          // Save JWT token and user data to localStorage
-          localStorage.setItem('token', data.token);
-          localStorage.setItem('user', JSON.stringify(data.user));
+          // Store authentication data using auth store
+          this.authStore.setAuth(data.token, data.user);
 
           // Redirect to recipes page after 1.5 seconds
           setTimeout(() => {
@@ -214,41 +212,44 @@ export default {
 </script>
 
 <style scoped>
-/* Main container with centered content */
 .register-container {
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 80vh;
+  min-height: 100vh;
   padding: 20px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+
+    background-image: url('@/assets/wp1989396.png');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
 }
 
-/* Registration card with shadow */
 .register-card {
-  background: white;
-  border-radius: 16px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-  padding: 40px;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  padding: 45px;
   max-width: 500px;
   width: 100%;
+  backdrop-filter: blur(10px);
 }
 
-/* Main heading */
 .register-card h1 {
   margin-bottom: 10px;
   color: #2c3e50;
   font-size: 32px;
+  text-align: center;
+  font-weight: 700;
 }
 
-/* Subtitle text */
 .subtitle {
-  color: #666;
+  color: #555;
   margin-bottom: 30px;
   font-size: 16px;
+  text-align: center;
 }
 
-/* Error message styling */
 .error-message {
   background: #fee;
   color: #c33;
@@ -259,7 +260,6 @@ export default {
   font-weight: 500;
 }
 
-/* Success message styling */
 .success-message {
   background: #efe;
   color: #2a7;
@@ -270,14 +270,12 @@ export default {
   font-weight: 500;
 }
 
-/* Form container */
 .register-form {
   display: flex;
   flex-direction: column;
   gap: 20px;
 }
 
-/* Form group container */
 .form-group {
   display: flex;
   flex-direction: column;
@@ -285,14 +283,12 @@ export default {
   text-align: left;
 }
 
-/* Form labels */
 .form-group label {
   font-weight: 600;
   color: #2c3e50;
   font-size: 14px;
 }
 
-/* Form inputs */
 .form-group input {
   padding: 12px 16px;
   border: 2px solid #e0e0e0;
@@ -300,28 +296,25 @@ export default {
   font-size: 16px;
   transition: all 0.3s;
   font-family: inherit;
+  background: white;
 }
 
-/* Input focus state */
 .form-group input:focus {
   outline: none;
   border-color: #667eea;
   box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
-/* Disabled input state */
 .form-group input:disabled {
   background: #f5f5f5;
   cursor: not-allowed;
 }
 
-/* Helper text below inputs */
 .form-group small {
   color: #666;
   font-size: 12px;
 }
 
-/* Primary button styling */
 .btn-primary {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
@@ -335,27 +328,24 @@ export default {
   margin-top: 10px;
 }
 
-/* Button hover effect */
 .btn-primary:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 5px 20px rgba(102, 126, 234, 0.5);
 }
 
-/* Disabled button state */
 .btn-primary:disabled {
   background: #ccc;
   cursor: not-allowed;
   transform: none;
 }
 
-/* Login link container */
 .login-link {
   margin-top: 20px;
   text-align: center;
-  color: #666;
+  color: #555;
+  font-size: 14px;
 }
 
-/* Login link styling */
 .login-link a {
   color: #667eea;
   text-decoration: none;
@@ -363,20 +353,8 @@ export default {
   transition: color 0.3s;
 }
 
-/* Login link hover effect */
 .login-link a:hover {
   color: #764ba2;
   text-decoration: underline;
-}
-
-/* Responsive design for mobile devices */
-@media (max-width: 600px) {
-  .register-card {
-    padding: 30px 20px;
-  }
-
-  .register-card h1 {
-    font-size: 28px;
-  }
 }
 </style>

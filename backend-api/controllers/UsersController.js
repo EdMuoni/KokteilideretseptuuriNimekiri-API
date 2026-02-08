@@ -3,7 +3,7 @@ const Utilities = require('./Utilities')
 const UUID = require('uuid')
 const jwt = require('jsonwebtoken');
 
-// REGISTER NEW USER
+// REGISTER NEW USER (auth)
 exports.register = async (req, res) => {
     try {
         const{
@@ -99,6 +99,66 @@ exports.register = async (req, res) => {
     }
 };
 
+//  Logging in user (auth)
+
+exports.login = async (req, res) => {
+    try {
+        const { email, password } = req.body;
+
+        if (!email || !password) {
+            return res.status(400).json({
+                error: 'Email and password are required'
+            });
+        }
+
+        const user = await db.users.findOne({
+            where: { EmailAddress: email }
+        });
+
+        if (!user) {
+            return res.status(401).json({
+                error: 'Invalid email or password'
+            });
+        }
+
+        const isPasswordValid = await Utilities.letMeIn(password, user.PasswordHASH);
+
+        if (!isPasswordValid) {
+            return res.status(401).json({
+                error: 'Invalid email or password'
+            });
+        }
+
+        const token = jwt.sign(
+            {
+                UserID: user.UserID,
+                IsAdmin: user.IsAdmin
+            },
+            process.env.JWT_SECRET,
+            { expiresIn: '24h' }
+        );
+
+        return res.status(200).json({
+            message: 'Login successful',
+            token,
+            user: {
+                UserID: user.UserID,
+                FullName: user.FullName,
+                EmailAddress: user.EmailAddress,
+                UserName: user.UserName,
+                IsAdmin: user.IsAdmin
+            }
+        });
+
+    } catch (error) {
+        console.error('Login error:', error);
+        return res.status(500).json({
+            error: 'Login failed'
+        });
+    }
+};
+
+// CREATE - Add a new user
 exports.create =
 async (req,res) => {
     if (
@@ -118,20 +178,17 @@ async (req,res) => {
     }
     
         if(req.body.PhoneNumber2FA != null){
-        newUser.PhoneNumber2FA = Utilities.gimmePassword(req.body.PhoneNumber2FA).toString();}
+        newUser.PhoneNumber2FA = (await Utilities.gimmePassword(req.body.PhoneNumber2FA)).toString();}
     
     const resultingUser = await db.users.create(newUser);
     return res
     .location(`${Utilities.getBaseURL(req)}/users/${resultingUser.UserID}`).sendStatus(201);
 }
-
-// GET ALL USERS (with optional email filter)
+// GET ALL USERS
 exports.getAllUsers = async (req, res) => {
   try {
-
-    
-    //const users = await db.users.findAll();
-    //res.status(200).send(users.map(({UserID, DisplayName, IsAdmin}) => {return {UserID, DisplayName, IsAdmin }}))
+    // Fetches all users from database
+    const users = await db.users.findAll();
 
     // Checks for email filter in query parameter OR header
     const emailFilter = req.query.email || req.headers['loginemail'];
@@ -164,6 +221,8 @@ exports.getAllUsers = async (req, res) => {
     return res.status(200).json(userList);
   } catch (error) {  
     console.error("Error fetching users:", error);
+
+    // Returns error response
     return res.status(500).send({ 
       error: "Failed to fetch users",
       details: error.message 
@@ -171,60 +230,125 @@ exports.getAllUsers = async (req, res) => {
   }
 };
 
-// GET USER BY ID
+// GET BY ID - Get a single user
 exports.getByID = async (req, res) => {
-  try {
-    const user = await getUser(req, res);
-    if (!user) return; 
-    
-    return res.status(200).json({
-      UserID: user.UserID,
-      FullName: user.FullName,
-      UserName: user.UserName,
-      EmailAddress: user.EmailAddress,
-      IsAdmin: user.IsAdmin
-    });
-  } 
-  
-    catch (error) {
-    console.error('Error fetching user by ID:', error);
-    return res.status(500).json({
-      error: 'Failed to fetch user',
-      details: error.message
-    });
-  }
+    try {
+        const user = await db.users.findByPk(req.params.UserID);
+
+        if (!user) {
+            return res.status(404).json({ error: `User with this ID does not exist ${req.params.UserID}.` });
+        }
+
+        return res.status(200).json({
+            UserID: user.UserID,
+            FullName: user.FullName,
+            EmailAddress: user.EmailAddress,
+            UserName: user.UserName,
+            PhoneNumber2FA: user.PhoneNumber2FA,
+            IsAdmin: user.IsAdmin
+        });
+    } catch (error) {
+        console.error('Error fetching user:', error);
+        return res.status(500).json({
+            error: 'Failed to fetch user',
+            details: error.message
+        });
+    }
 };
 
-const getUser = async (req, res) => {
-    const userID = req.params.UserID;
-    const user = await db.users.findByPk(userID);
-    if (!user) {
-        res.status(404).json({error: `User with this ID does not exist ${userID}.`});
-        return null;
-    }
-    return user;
-}
+// UPDATE - Updates a user's details
+exports.update = async (req, res) => {
+    try {
+        const user = await db.users.findByPk(req.params.UserID);
 
-// GET USER BY EMAIL
-exports.getUserByEmail = async (req, res) => {
-  try {
-    const loginEmail = req.params.LoginEmail;
-    
-    const user = await db.users.findOne({
-      where: { EmailAddress: loginEmail },
-      attributes: ['UserID', 'FullName', 'UserName', 'IsAdmin', 'EmailAddress']
-    });
-    
-    if (!user) {
-      return res.status(404).json({ error: 'User not found' });
+        if (!user) {
+            return res.status(404).json({ error: "User not found" });
+        }
+
+        const { FullName, EmailAddress, UserName, PhoneNumber2FA, IsAdmin } = req.body;
+
+        if (!FullName || !EmailAddress || !UserName) {
+            return res.status(400).json({
+                error: "Missing required parameters. FullName, EmailAddress, and UserName are required."
+            });
+        }
+
+        // Check if email is already taken by another user
+        const existingEmail = await db.users.findOne({
+            where: {
+                EmailAddress: EmailAddress,
+                UserID: { [db.Sequelize.Op.ne]: req.params.UserID }
+            }
+        });
+        if (existingEmail) {
+            return res.status(409).json({ error: "Email address is already in use by another user." });
+        }
+
+        // Check if username is already taken by another user
+        const existingUsername = await db.users.findOne({
+            where: {
+                UserName: UserName,
+                UserID: { [db.Sequelize.Op.ne]: req.params.UserID }
+            }
+        });
+        if (existingUsername) {
+            return res.status(409).json({ error: "Username is already in use by another user." });
+        }
+
+        let updateData = {
+            FullName,
+            EmailAddress,
+            UserName,
+            PhoneNumber2FA: PhoneNumber2FA || user.PhoneNumber2FA,
+            IsAdmin: IsAdmin !== undefined ? IsAdmin : user.IsAdmin
+        };
+
+        if (req.body.PasswordHASH) {
+            updateData.PasswordHASH = (await Utilities.gimmePassword(req.body.PasswordHASH)).toString();
+        }
+
+        await user.update(updateData);
+
+        return res.status(200).json({
+            UserID: user.UserID,
+            FullName: user.FullName,
+            EmailAddress: user.EmailAddress,
+            UserName: user.UserName,
+            PhoneNumber2FA: user.PhoneNumber2FA,
+            IsAdmin: user.IsAdmin
+        });
+
+    } catch (error) {
+        console.error('Error updating user:', error);
+        return res.status(500).json({
+            error: 'Failed to update user',
+            details: error.message
+        });
     }
-    
-    return res.status(200).json(user);
-  } catch (error) {
-    console.error('Error fetching user by email:', error);
-    return res.status(500).json({ 
-      error: 'Failed to fetch user',
-      details: error.message 
-    });
-  }
+};
+
+// DELETE - Removes a user
+exports.delete = async (req, res) => {
+    try {
+        const user = await db.users.findByPk(req.params.UserID);
+
+        if (!user) {
+            return res.status(404).json({ error: "User not found" });
+        }
+        // Deletes all UserRatings belonging to this user first (foreign key constraint)
+        await db.userRatings.destroy({
+            where: { UserID: req.params.UserID }
+        });
+
+        await user.destroy();
+
+        return res.status(204).send();
+
+    } catch (error) {
+        console.error('Error deleting user:', error);
+        return res.status(500).json({
+            error: 'Failed to delete user',
+            details: error.message
+        });
+    }
 };

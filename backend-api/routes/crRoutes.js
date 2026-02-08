@@ -19,8 +19,16 @@ module.exports = (app) => {
     // USERS ROUTES
     // Get all users OR filter by email (?email=a@a.com)
     app.route("/users")
-        .post(UsersController.create)
-        .get(UsersController.getAllUsers)
+    .post(UsersController.create)
+    .get(UsersController.getAllUsers)
+
+    app.route("/users/:UserID")
+    .get(UsersController.getByID)
+    .put(UsersController.update)
+    .delete(UsersController.delete)
+
+    app.post("/auth/register",UsersController.register)
+    app.post("/auth/login",UsersController.login)
     
     // Get user by UserID
     app.route("/users/:UserID")

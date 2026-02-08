@@ -52,17 +52,6 @@ async (req, res) => {
     res.status(204).send({error: "No Content"});
 }	
 
-exports.deletedById =
-async (req, res) => {
-    const recipeToBeDeleted = await getRecipe(req, res);
-    if(!recipeToBeDeleted) 
-    {
-        return;
-    }
-    await recipeToBeDeleted.destroy();
-    res.status(204).send({error:"No Content"});
-}
-
 exports.modifiedById =
 async (req, res) => {
     const recipeToBeChanged = await getRecipe(req, res);

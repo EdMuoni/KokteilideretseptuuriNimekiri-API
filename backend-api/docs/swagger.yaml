@@ -263,7 +263,7 @@ paths:
             parameters:
                 -
                     name: UserID
-                    description: ID of User
+                    description: ID of existing User
                     in: path
                     required: true
                     type: string
@@ -297,6 +297,89 @@ paths:
                                 ]
             summary: Get all details of an existing User
             description: 'Will return all details of a given User, based on UserID given'
+        put:
+            tags:
+                - Users
+            parameters:
+                -
+                    name: UserID
+                    description: ID of existing User
+                    in: path
+                    required: true
+                    type: string
+                -
+                    name: body
+                    schema:
+                        $ref: '#/definitions/new-User'
+                    in: body
+                    required: true
+            responses:
+                '200':
+                    description: Returns response code 200 when User details where successfuly updated
+                    schema:
+                        type: array
+                        items:
+                            type: string
+                    examples:
+                        application/json:
+                            UserID: 019bc766-d172-77fd-803a-1bf46ba9b884
+                            FullName: Updated FullName
+                            UserName: UpdatedUser
+                            EmailAddress: updated@updated.com
+                            IsAdmin: false
+                '400':
+                    description: Returns response code 400 when required parameters are missing
+                    schema:
+                        $ref: '#/definitions/error'
+                    examples:
+                        application/json:
+                            error: Some parameters are missing. Please try again!
+                '404':
+                    description: 'Returns response code 404 when such UserID does not exist '
+                    schema:
+                        $ref: '#/definitions/error'
+                    examples:
+                        application/json:
+                            error: User not found
+                '409':
+                    description: Returns response code 409 when current Username or email are currently taken
+                    schema:
+                        $ref: '#/definitions/error'
+                    examples:
+                        application/json:
+                            error: Email address is already in use by another user.
+            summary: Updates details of an existing User
+            description: 'Will change certain details of a given User, based on given UserID'
+        delete:
+            tags:
+                - Users
+            parameters:
+                -
+                    name: UserID
+                    description: ID of existing User
+                    in: path
+                    required: true
+                    type: string
+            responses:
+                '204':
+                    description: Returns response code 204 "No Content" when User deletion was successful
+                    schema:
+                        type: array
+                        items:
+                            type: string
+                    examples:
+                        application/json:
+                            -
+                                error: No Content
+                '404':
+                    description: 'Returns response code 404 when such User does not exist '
+                    schema:
+                        $ref: '#/definitions/error'
+                    examples:
+                        application/json:
+                            error: User not found
+            summary: Deletes a existing User from the app
+            description: Deletes a User data from the app permanently.
     '/userRatings/{UserRatingID}':
         get:
             tags:

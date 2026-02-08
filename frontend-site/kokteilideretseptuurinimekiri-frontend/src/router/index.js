@@ -1,45 +1,83 @@
-import { createRouter, createWebHashHistory } from "vue-router";
-import HomeView from "../views/HomeView.vue";
+import { createRouter, createWebHistory } from 'vue-router'
+import { useAuthStore } from '@/store/auth'
+import HomeView from '../views/HomeView.vue'
+import AboutView from '../views/AboutView.vue'
+import LoginView from '../views/LoginView.vue'
+import RegisterView from '../views/RegisterView.vue'
+import RecipesView from '../views/RecipesView.vue'
+import SingleRecipeView from '../views/SingleRecipeView.vue'
 
 const routes = [
   {
-    path: "/",
-    name: "home",
-    component: HomeView,
+    path: '/',
+    name: 'home',
+    component: HomeView
   },
   {
-    path: "/about",
-    name: "about",
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () =>
-      import(/* webpackChunkName: "about" */ "../views/AboutView.vue"),
-  },
-
-  {
-    path: "/recipes",
-    name: "recipes",
-    component: () => import("../views/RecipesView.vue"),
+    path: '/about',
+    name: 'about',
+    component: AboutView
   },
   {
-    path: "/recipe/:seekID",
-    name: "recipe",
-    component: () => import("../views/SingleRecipeView.vue"),
-    props: (route) => {
-      return { seekID: String(route.params.seekID) };
-    },
+    path: '/login',
+    name: 'login',
+    component: LoginView,
+    // Only accessible when NOT logged in
+    meta: { guestOnly: true } 
   },
   {
-    path: "/register",
-    name: "register",
-    component: () => import("../views/RegisterView.vue"),
+    path: '/register',
+    name: 'register',
+    component: RegisterView,
+    // Only accessible when NOT logged in
+    meta: { guestOnly: true } 
+  },
+  {
+    path: '/recipes',
+    name: 'recipes',
+    component: RecipesView,
+    // Requires authentication
+    meta: { requiresAuth: true } 
+  },
+  {
+    path: '/recipes/:recipeID',
+    name: 'recipe',
+    component: SingleRecipeView,
+    // Requires authentication
+    meta: { requiresAuth: true }
   }
-];
+]
 
 const router = createRouter({
-  history: createWebHashHistory(),
-  routes,
-});
+  history: createWebHistory(process.env.BASE_URL),
+  routes
+})
 
-export default router;
+// Navigation guard
+router.beforeEach((to, from, next) => {
+  const authStore = useAuthStore()
+  
+  // Check if route requires authentication
+  if (to.meta.requiresAuth) {
+    if (!authStore.isAuthenticated) {
+      // Not authenticated, redirect to login
+      return next({
+        name: 'login',
+        query: { redirect: to.fullPath } 
+      })
+    }
+  }
+  
+  // Check if route is guest only (login/register pages)
+  if (to.meta.guestOnly) {
+    if (authStore.isAuthenticated) {
+      // Already authenticated, redirect to recipes
+      return next({ name: 'recipes' })
+    }
+  }
+  
+  // Allow navigation
+  next()
+})
+
+export default router
