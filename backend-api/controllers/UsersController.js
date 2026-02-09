@@ -184,12 +184,10 @@ async (req,res) => {
     return res
     .location(`${Utilities.getBaseURL(req)}/users/${resultingUser.UserID}`).sendStatus(201);
 }
+
 // GET ALL USERS
 exports.getAllUsers = async (req, res) => {
   try {
-    // Fetches all users from database
-    const users = await db.users.findAll();
-
     // Checks for email filter in query parameter OR header
     const emailFilter = req.query.email || req.headers['loginemail'];
     
