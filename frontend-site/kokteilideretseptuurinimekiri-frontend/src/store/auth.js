@@ -3,49 +3,57 @@ import { defineStore } from 'pinia'
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
-    token: localStorage.getItem('token') || null,
-    currentUser: JSON.parse(localStorage.getItem('user') || 'null')
+    currentUser: null,
+    isAuthenticated: false
   }),
   
   getters: {
-    isAuthenticated: (state) => !!state.token,
     isAdmin: (state) => state.currentUser?.IsAdmin || false,
     userName: (state) => state.currentUser?.UserName || '',
     userId: (state) => state.currentUser?.UserID || null
   },
   
   actions: {
-    setAuth(token, user) {
-      this.token = token
+    // Called after successful login
+    login(user) {
       this.currentUser = user
-      
-      // Persist to localStorage
-      localStorage.setItem('token', token)
+      this.isAuthenticated = true
       localStorage.setItem('user', JSON.stringify(user))
+      console.log('[Auth Store] User logged in:', user)
     },
     
+    // Called on logout - SYNCHRONOUS to immediately update UI
     logout() {
-      this.token = null
+      // Clear state IMMEDIATELY
       this.currentUser = null
-      
-      // Clear localStorage
-      localStorage.removeItem('token')
+      this.isAuthenticated = false
       localStorage.removeItem('user')
+      
+      console.log('[Auth Store] User logged out')
+      
+      // Destroy backend session (fire and forget)
+      fetch('http://localhost:8080/sessions', {
+        method: 'DELETE',
+        credentials: 'include'
+      }).catch(error => console.error('[Auth Store] Logout error:', error))
     },
     
-    // Check if token is still valid
-    checkAuth() {
-      const token = localStorage.getItem('token')
+    // Initialize auth state from localStorage on app load
+    initializeAuth() {
       const user = localStorage.getItem('user')
       
-      if (token && user) {
-        this.token = token
-        this.currentUser = JSON.parse(user)
-        return true
+      if (user) {
+        try {
+          this.currentUser = JSON.parse(user)
+          this.isAuthenticated = true
+          console.log('[Auth Store] Restored user from localStorage:', this.currentUser)
+        } catch (error) {
+          console.error('[Auth Store] Error parsing saved user:', error)
+          this.logout()
+        }
+      } else {
+        console.log('[Auth Store] No saved user found')
       }
-      
-      this.logout()
-      return false
     }
   }
 })

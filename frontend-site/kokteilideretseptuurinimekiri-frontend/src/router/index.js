@@ -6,6 +6,7 @@ import LoginView from '../views/LoginView.vue'
 import RegisterView from '../views/RegisterView.vue'
 import RecipesView from '../views/RecipesView.vue'
 import SingleRecipeView from '../views/SingleRecipeView.vue'
+import AdminView from '../views/AdminView.vue'
 
 const routes = [
   {
@@ -45,7 +46,13 @@ const routes = [
     component: SingleRecipeView,
     // Requires authentication
     meta: { requiresAuth: true }
-  }
+  },
+  {                                          
+    path: '/admin',                          
+    name: 'admin',                           
+    component: AdminView,                   
+    meta: { requiresAuth: true, requiresAdmin: true }  
+  }   
 ]
 
 const router = createRouter({
@@ -68,6 +75,14 @@ router.beforeEach((to, from, next) => {
     }
   }
   
+  // Check if route requires admin
+  if (to.meta.requiresAdmin) {
+    if (!authStore.isAdmin) {
+      // Not admin, redirect to recipes
+      return next({ name: 'recipes' })
+    }
+  }
+
   // Check if route is guest only (login/register pages)
   if (to.meta.guestOnly) {
     if (authStore.isAuthenticated) {

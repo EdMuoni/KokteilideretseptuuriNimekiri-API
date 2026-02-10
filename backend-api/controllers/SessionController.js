@@ -7,7 +7,7 @@ exports.newSession = async (req, res) => {
     console.log('[Login] Request body:', req.body)
     
     // Validate input parameters
-    if (req.body.LoginEmail === undefined || !req.body.LoginPassword === undefined) {
+    if (!req.body.LoginEmail || !req.body.LoginPassword) {
         var missingparams = "";
         if (!req.body.LoginEmail) {
             missingparams += " No email provided. ";

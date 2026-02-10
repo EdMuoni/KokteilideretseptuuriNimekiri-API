@@ -11,7 +11,17 @@ const yamljs = require('yamljs');
 const swaggerDocument = yamljs.load('./docs/swagger.yaml');
 const {sync, sessionStore} = require('./db');
 
-app.use(cors());
+app.use(cors({
+    //Frontend URL must be explicitly allowed when using credentials (cookies/sessions)
+    origin: ['http://localhost:8081', 'http://172.23.51.143:8081'],
+    // CRITICAL: Allow cookies/sessions to be sent in CORS requests  
+    credentials: true,                 
+    // Allow the following request methods
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    // Allow the following headers in requests
+    allowedHeaders: ['Content-Type', 'Authorization']
+}));
+
 app.use('/docs', swaggerUI.serve, swaggerUI.setup(swaggerDocument));
 app.use(express.json());
 app.use(session({

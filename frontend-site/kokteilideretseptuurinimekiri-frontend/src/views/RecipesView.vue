@@ -90,7 +90,7 @@ export default {
             <td class="recipe-score">
               <span class="score-badge">{{ recipe.UserScore }} / 5</span>
             </td>
-            
+
             <td class="actions">
               <button 
                 @click="viewRecipe(recipe.RecipeID)" 
@@ -112,6 +112,7 @@ export default {
   max-width: 1200px;
   margin: 40px auto;
   padding: 20px;
+
 }
 
 h1 {

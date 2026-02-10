@@ -25,6 +25,7 @@
                         v-model="formData.email"
                         placeholder="Enter your email address"
                         required
+                        autocomplete="email"
                         :disabled="loading"
                     />
                 </div>
@@ -39,6 +40,7 @@
                         placeholder="At least 8 characters long"
                         required
                         minlength="8"
+                        autocomplete="current-password"
                         :disabled="loading"
                     />
                 </div>
@@ -58,14 +60,8 @@
 </template>
 
 <script>
-import { useAuthStore } from '@/store/auth'
-
 export default {
     name: 'LoginView',
-    setup() {
-        const authStore = useAuthStore()
-        return { authStore }
-    },
     data() {
         return {
             formData: {
@@ -79,41 +75,57 @@ export default {
     },
     methods: {
         async handleLogin() {
+            // Reset messages
             this.errorMessage = '';
             this.successMessage = '';
             this.loading = true;
 
+            console.log('[Login] Starting login process');
+
             try {
-                // Call backend login API
-                const response = await fetch('http://localhost:8080/auth/login', {
+                // Make API request to backend
+                const response = await fetch('http://localhost:8080/sessions', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify(this.formData)
+                    credentials: 'include',  
+                    body: JSON.stringify({
+                        LoginEmail: this.formData.email,      
+                        LoginPassword: this.formData.password  
+                    })
                 });
 
+                console.log('[Login] Response status:', response.status);
+
+                // Parse response data
                 const data = await response.json();
+                console.log('[Login] Response data:', data);
 
                 if (response.ok) {
-                    // Login successful
+                    console.log('[Login] Login successful');
+                    
+                    // Store user data in localStorage
+                    localStorage.setItem('user', JSON.stringify(data));
+                    
+                    // Show success message
                     this.successMessage = 'Login successful! Redirecting...';
                     
-                    // Store authentication data
-                    this.authStore.setAuth(data.token, data.user);
-                    
-                    // Redirect to recipes page after 1 second
+                    // Redirect to recipes page
+                    console.log('[Login] Redirecting to /recipes');
                     this.$router.push('/recipes');
                     
-
                 } else {
                     // Login failed
-                    this.errorMessage = data.error || 'Login failed. Please check your credentials.';
+                    console.error('[Login] Login failed:', data.error);
+                    this.errorMessage = data.error || 'Login failed. Please try again.';
                 }
 
             } catch (error) {
-                console.error('Login error:', error);
-                this.errorMessage = 'Connection error. Please check if the backend is running.';
+                // Network or other error occurred
+                console.error('[Login] Error occurred:', error);
+                this.errorMessage = 'An error occurred. Please try again.';
+                
             } finally {
                 this.loading = false;
             }
@@ -124,94 +136,67 @@ export default {
 
 <style scoped>
 .login-container {
+    min-height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
-
-    min-height: 100vh;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     padding: 20px;
-    
+
     background-image: url('@/assets/wp1989396.png');
     background-size: cover;
     background-position: center;
-    background-repeat: no-repeat;
     background-attachment: fixed;
 }
 
 .login-card {
-    background: rgba(255, 255, 255, 0.95);
+    background: white;
     border-radius: 20px;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-    padding: 45px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    padding: 60px 50px;
     max-width: 450px;
     width: 100%;
-    backdrop-filter: blur(10px);
 }
 
-.login-card h1 {
-    margin-bottom: 10px;
+h1 {
     color: #2c3e50;
+    margin-bottom: 10px;
     font-size: 32px;
-
     text-align: center;
-    font-weight: 700;
 }
 
 .subtitle {
-    color: #555;
-    margin-bottom: 30px;
-    font-size: 16px;
+    color: #666;
     text-align: center;
-}
-
-.error-message {
-    background: #fee;
-    color: #c33;
-    padding: 12px;
-    border-radius: 8px;
-    margin-bottom: 20px;
-    border-left: 4px solid #c33;
-    font-weight: 500;
-}
-
-.success-message {
-    background: #efe;
-    color: #2a7;
-    padding: 12px;
-    border-radius: 8px;
-    margin-bottom: 20px;
-    border-left: 4px solid #2a7;
-    font-weight: 500;
+    margin-bottom: 40px;
+    font-size: 16px;
 }
 
 .login-form {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 25px;
 }
 
-/* Form group container */
 .form-group {
     display: flex;
     flex-direction: column;
-    gap: 6px;
-    text-align: left;
 }
 
 .form-group label {
     font-weight: 600;
     color: #2c3e50;
+    margin-bottom: 8px;
     font-size: 14px;
 }
 
 .form-group input {
-    padding: 12px 16px;
+    padding: 14px 16px;
     border: 2px solid #e0e0e0;
-    border-radius: 8px;
-    font-size: 16px;
+    border-radius: 10px;
+    font-size: 15px;
     transition: all 0.3s;
     font-family: inherit;
-    background: white;
 }
 
 .form-group input:focus {
@@ -221,7 +206,7 @@ export default {
 }
 
 .form-group input:disabled {
-    background: #f5f5f5;
+    background-color: #f5f5f5;
     cursor: not-allowed;
 }
 
@@ -229,8 +214,8 @@ export default {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
     border: none;
-    padding: 14px 20px;
-    border-radius: 8px;
+    padding: 16px;
+    border-radius: 10px;
     font-size: 16px;
     font-weight: 600;
     cursor: pointer;
@@ -240,31 +225,60 @@ export default {
 
 .btn-primary:hover:not(:disabled) {
     transform: translateY(-2px);
-    box-shadow: 0 5px 20px rgba(102, 126, 234, 0.5);
+    box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
 }
 
 .btn-primary:disabled {
-    background: #ccc;
+    opacity: 0.6;
     cursor: not-allowed;
-    transform: none;
+}
+
+.error-message {
+    background-color: #fee;
+    color: #c33;
+    padding: 15px;
+    border-radius: 10px;
+    border-left: 4px solid #c33;
+    margin-bottom: 20px;
+    font-size: 14px;
+}
+
+.success-message {
+    background-color: #efe;
+    color: #2a2;
+    padding: 15px;
+    border-radius: 10px;
+    border-left: 4px solid #2a2;
+    margin-bottom: 20px;
+    font-size: 14px;
 }
 
 .register-link {
-    margin-top: 20px;
     text-align: center;
-    color: #555;
+    margin-top: 30px;
+    color: #666;
     font-size: 14px;
 }
 
 .register-link a {
     color: #667eea;
-    text-decoration: none;
     font-weight: 600;
+    text-decoration: none;
     transition: color 0.3s;
 }
 
 .register-link a:hover {
     color: #764ba2;
     text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+    .login-card {
+        padding: 40px 30px;
+    }
+    
+    h1 {
+        font-size: 28px;
+    }
 }
 </style>

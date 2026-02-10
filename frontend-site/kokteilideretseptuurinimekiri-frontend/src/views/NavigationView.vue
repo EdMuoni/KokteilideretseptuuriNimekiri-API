@@ -22,6 +22,10 @@
         <li v-if="isAuthenticated" class="nav-item">
           <router-link to="/recipes" class="nav-link">Recipes</router-link>
         </li>
+
+        <li v-if="isAdmin" class="nav-item">
+          <router-link to="/admin" class="nav-link admin-link">Admin Tools</router-link>
+        </li>
         
         <!-- Shows Login/Register only when NOT authenticated -->
         <li v-if="!isAuthenticated" class="nav-item">
