@@ -6,7 +6,7 @@ const Utilities = require("./Utilities.js")
 exports.newSession = async (req, res) => {
     console.log('[Login] Request body:', req.body)
     
-    // Validate input parameters
+    // Validates input parameters
     if (!req.body.LoginEmail || !req.body.LoginPassword) {
         var missingparams = "";
         if (!req.body.LoginEmail) {
