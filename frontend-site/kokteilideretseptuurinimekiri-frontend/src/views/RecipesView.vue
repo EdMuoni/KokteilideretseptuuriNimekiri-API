@@ -36,7 +36,6 @@ export default {
       }
     },
     
-    // ✅ CORRECT WAY: Navigate to single recipe using route name and params
     viewRecipe(recipeID) {
       this.$router.push({
         name: 'recipe',  // Must match router: name: 'recipe'
@@ -88,7 +87,6 @@ export default {
               <span class="score-badge">{{ recipe.UserScore }} / 5</span>
             </td>
             <td class="actions">
-              <!-- ✅ CORRECT: Call viewRecipe with the RecipeID -->
               <button 
                 @click="viewRecipe(recipe.RecipeID)" 
                 class="btn-view"
