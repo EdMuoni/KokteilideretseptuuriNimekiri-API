@@ -1,4 +1,6 @@
 const {Sequelize, DataTypes} = require('sequelize');
+const session = require('express-session');
+const SequelizeStore = require('connect-session-sequelize')(session.Store);
 
 const sequelize = new Sequelize(
     process.env.DB_DBNAME,
@@ -7,72 +9,62 @@ const sequelize = new Sequelize(
     {
         host: process.env.DB_HOSTNAME,
         dialect: 'mariadb',
-
-        logging: false,
+        logging: console.log,
     }
 );
 
-(async () => {
+async() => {
     try {
         await sequelize.authenticate();
-        console.log('Connection has been established successfully!');
+        console.log('Connection has been established successfully, yippie!');
     } catch (error) {
-        console.error('Unable to connect to the database:', error);
+        console.error("Unable to connect. " + error);
     }
-})();
+}
+
+const sessionStore = new SequelizeStore({
+    db: sequelize,
+    tableName: 'Sessions',
+});
 
 const db = {};
 db.Sequelize = Sequelize;
 db.sequelize = sequelize;
-
-
 // Load models
 db.recipes = require('./models/Recipe.js')(sequelize, DataTypes);
 db.users = require('./models/User.js')(sequelize, DataTypes);
 db.userRatings = require('./models/UserRating.js')(sequelize, DataTypes);
+//db.sessions = require('./models/Session.js')(sequelize, DataTypes);
 
 // Define correct associations WITH PROPER FOREIGN KEYS
 // UserRating belongs to User
 db.userRatings.belongsTo(db.users, {
-    foreignKey: 'UserID',  // ← THIS TELLS SEQUELIZE TO USE UserID, NOT UserUserID
+    foreignKey: 'UserID',  
     as: 'user'
 });
 
 // UserRating belongs to Recipe
 db.userRatings.belongsTo(db.recipes, {
-    foreignKey: 'RecipeID',  // ← THIS TELLS SEQUELIZE TO USE RecipeID, NOT CocktailRecipeID
+    foreignKey: 'RecipeID',  
     as: 'recipe'
 });
 
 // User has many UserRatings
 db.users.hasMany(db.userRatings, {
-    foreignKey: 'UserID',  // ← MUST MATCH THE COLUMN NAME IN YOUR DATABASE
+    foreignKey: 'UserID',  
     as: 'ratings'
 });
 
 // Recipe has many UserRatings
 db.recipes.hasMany(db.userRatings, {
-    foreignKey: 'RecipeID',  // ← MUST MATCH THE COLUMN NAME IN YOUR DATABASE
+    foreignKey: 'RecipeID', 
     as: 'ratings'
 });
 
-const sync = async () => {
-    try {
-        await sequelize.sync({force: false});
-        console.log('DB sync completed.');
-    } catch (error) {
-        console.error('Sync error:', error);
-    }
-};
+const sync = (async () => {
+    await sessionStore.sync();
+    await sequelize.sync({alter: true});
+    console.log('DB sync has been completed.');
+});
 
-module.exports = {db, sync};
-
-// UserRating is a junction table for many-to-many relationship between Users and Recipes
-// db.recipes.belongsToMany(db.users, {through: db.userRatings, as: 'recipes'});
-// db.users.belongsToMany(db.recipes, {through: db.userRatings});
-
-// Also add direct relationships for easier querying
-// db.userRatings.belongsTo(db.users, {foreignKey: 'UserID'});
-// db.userRatings.belongsTo(db.recipes, {foreignKey: 'RecipeID'});
-// db.users.hasMany(db.userRatings, {foreignKey: 'UserID'});
-// db.recipes.hasMany(db.userRatings, {foreignKey: 'RecipeID'});
+module.exports = {db, sync, sessionStore};

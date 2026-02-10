@@ -1,23 +1,47 @@
 const CocktailRecipesController = require("../controllers/CocktailRecipesController")
 const UsersController = require("../controllers/UsersController")
 const UserRatingsController = require("../controllers/UserRatingsController")
+const SessionController = require("../controllers/SessionController")
+console.log('REGISTER TYPE:', typeof UsersController.register);
 
 module.exports = (app) => {
+
     app.route("/recipes")
     .get(CocktailRecipesController.getAll)
     .post(CocktailRecipesController.create)
+
     app.route("/recipes/:RecipeID")
     .get(CocktailRecipesController.getByID)
     .delete(CocktailRecipesController.deletedById)
     .put(CocktailRecipesController.modifiedById)
+
     app.route("/users")
     .post(UsersController.create)
     .get(UsersController.getAllUsers)
+
+    app.route("/users/:UserID")
+    .get(UsersController.getByID)
+    .put(UsersController.update)
+    .delete(UsersController.delete)
+
+    app.post("/auth/register",UsersController.register)
+    app.post("/auth/login",UsersController.login)
+    
+    // POST /sessions - Create new session (login)
+    app.post("/sessions", SessionController.newSession)
+    
+    // GET /sessions/me - Check current session (who am I?)
+    app.get("/sessions/me", SessionController.reAuthenticate)
+    
+    // DELETE /sessions - Destroy session (logout)
+    app.delete("/sessions", SessionController.removeSession)
+
     app.route("/UserRatings")
     .post(UserRatingsController.create)
     .get(UserRatingsController.getAll)
+
+    app.route("/UserRatings/:UserRatingID")
     .get(UserRatingsController.getById)
     .put(UserRatingsController.update)
     .delete(UserRatingsController.delete)
 }
-

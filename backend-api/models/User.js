@@ -1,12 +1,16 @@
 
 module.exports = (sequelize, DataTypes) => {
     const User = sequelize.define(
+
+         // PRIMARY KEY
+
         'User', {
             UserID: {
                 type: DataTypes.UUID,
                 primaryKey: true,
                 defaultValue: DataTypes.UUIDV4
             },
+
             FullName: {
                 type: DataTypes.STRING,
                 allowNull: false
@@ -23,15 +27,17 @@ module.exports = (sequelize, DataTypes) => {
                 type: DataTypes.STRING,
                 allowNull: false
             },
+
+            //OPTIONAL
             PhoneNumber2FA: {
                 type: DataTypes.STRING,
                 
             },
-            //LISTID ORDERS MISSING DUE TO TABLE MISSING
-            // IsAdmin: {
-            //     type: DataTypes.BOOLEAN,
-            //     defaultValue: false
-            // }
+            
+            IsAdmin: {
+                type: DataTypes.BOOLEAN,
+                defaultValue: false
+            }
         }
     )
     console.log(User === sequelize.models.User)

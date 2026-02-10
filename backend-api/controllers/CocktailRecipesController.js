@@ -2,14 +2,28 @@ const {db} = require('../db');
 const Utilities = require('./Utilities.js');
 //const UUID = require('uuid');
 
-exports.getAll = 
-async (req, res) => {
-    const recipes = await db.recipes.findAll();
-    console.log("getAll: " + recipes)
-    res
-    .status(200)
-    .send(recipes.map(({RecipeID, Name}) => {return{RecipeID, Name}}))
-}
+exports.getAll = async (req, res) => {
+    try {
+        const recipes = await db.recipes.findAll();
+        console.log('[Recipes] Found', recipes.length, 'recipes');
+        
+        // Return ALL fields, not just RecipeID and Name
+        res.status(200).send(
+            recipes.map(({RecipeID, Name, Description, Beverage, UserScore}) => {
+                return {
+                    RecipeID, 
+                    Name, 
+                    Description, 
+                    Beverage, 
+                    UserScore
+                };
+            })
+        );
+    } catch (error) {
+        console.error('[Recipes] Error fetching all recipes:', error);
+        res.status(500).send({error: 'Failed to fetch recipes'});
+    }
+};
 
 exports.getByID =
 async (req, res) => {
@@ -51,17 +65,6 @@ async (req, res) => {
     await recipeToBeDeleted.destroy();
     res.status(204).send({error: "No Content"});
 }	
-
-exports.deletedById =
-async (req, res) => {
-    const recipeToBeDeleted = await getRecipe(req, res);
-    if(!recipeToBeDeleted) 
-    {
-        return;
-    }
-    await recipeToBeDeleted.destroy();
-    res.status(204).send({error:"No Content"});
-}
 
 exports.modifiedById =
 async (req, res) => {

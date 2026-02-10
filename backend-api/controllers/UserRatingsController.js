@@ -3,21 +3,19 @@ const {db} = require('../db');
 const Utilities = require('./Utilities');
 const UUID = require('uuid');
 
-// ========================================
 // CREATE - Add a new rating
-// ========================================
 exports.create = async (req, res) => {
-    if (!req.body.UserScore || !req.body.UserComment) {
+    if (!req.body.UserID || !req.body.RecipeID ||!req.body.UserScore || !req.body.UserComment) {
         return res.status(400).send({
             error: "Missing some parameter, please review your request data."
         });
     }
 
-    if (!req.body.UserID || !req.body.RecipeID) {
-        return res.status(404).send({
-            error: "USER or RECIPE not found"
-        });
-    }
+    // if (!req.body.UserID || !req.body.RecipeID ||!req.body.UserScore || !req.body.UserComment) {
+    //     return res.status(404).send({
+    //         error: "USER or RECIPE not found"
+    //     });
+    // }
 
     try {
         let newRating = {
@@ -42,9 +40,7 @@ exports.create = async (req, res) => {
     }
 };
 
-// ========================================
 // GET ALL - Get all ratings
-// ========================================
 exports.getAll = async (req, res) => {
     try {
         const ratings = await db.userRatings.findAll({
@@ -66,15 +62,16 @@ exports.getAll = async (req, res) => {
     }
 };
 
-// ========================================
-// GetByID - Get UserRating by ID
-// ========================================
+// GetByID - Get rating by ID
 exports.getById = async (req, res) => {
     try {
         const rating = await db.userRatings.findByPk(req.params.UserRatingID, {
-            include: [
-                {model: db.users, as: 'user'},
-                {model: db.recipes, as: 'recipe'}
+            attributes: [
+                'UserRatingID', 
+                'UserID', 
+                'RecipeID', 
+                'UserScore', 
+                'UserComment'
             ]
         });
         
@@ -92,9 +89,7 @@ exports.getById = async (req, res) => {
     }
 };
 
-// ========================================
 // UPDATE - Modify a UserRating details
-// ========================================
 exports.update = async (req, res) => {
     try {
         const rating = await db.userRatings.findByPk(req.params.UserRatingID);
@@ -119,9 +114,7 @@ exports.update = async (req, res) => {
     }
 };
 
-// ========================================
 // DELETE - Remove a UserRating
-// ========================================
 exports.delete = async (req, res) => {
     try {
         const rating = await db.userRatings.findByPk(req.params.UserRatingID);
