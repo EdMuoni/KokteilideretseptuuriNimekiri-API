@@ -38,8 +38,8 @@ export default {
     
     viewRecipe(recipeID) {
       this.$router.push({
-        name: 'recipe',  // Must match router: name: 'recipe'
-        params: { recipeID: recipeID }  // Must match router: path: '/recipes/:recipeID'
+        name: 'recipe', 
+        params: { recipeID: recipeID }  
       });
     }
   }
@@ -80,12 +80,17 @@ export default {
         </thead>
         <tbody>
           <tr v-for="recipe in allRecipes" :key="recipe.RecipeID">
+
             <td class="recipe-name">{{ recipe.Name }}</td>
+
             <td class="recipe-description">{{ recipe.Description }}</td>
+
             <td>{{ recipe.Beverage }}</td>
+
             <td class="recipe-score">
               <span class="score-badge">{{ recipe.UserScore }} / 5</span>
             </td>
+            
             <td class="actions">
               <button 
                 @click="viewRecipe(recipe.RecipeID)" 

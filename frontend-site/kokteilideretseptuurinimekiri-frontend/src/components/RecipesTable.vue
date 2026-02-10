@@ -14,7 +14,6 @@ export default {
         });
 
         if (response.ok || response.status === 204) {
-          // Leiab ID järgi elemendi ja eemaldab seda nimekirjast
           const index = this.items.findIndex(
             (item) => item.RecipeID === RecipeID
           );
@@ -59,7 +58,6 @@ export default {
           </router-link>
         </td>
         <td>
-          <!-- PARANDUS 5: Eemaldatud liigne <router-link> -->
           <button 
             @click="deleteRecipe(item.RecipeID)" 
             class="btn btn-danger"
