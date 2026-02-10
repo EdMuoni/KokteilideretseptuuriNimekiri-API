@@ -40,7 +40,7 @@ exports.create = async (req, res) => {
     }
 };
 
-// GET ALL - Get all ratings
+// GET ALL - Get all users ratings
 exports.getAll = async (req, res) => {
     try {
         const ratings = await db.userRatings.findAll({
