@@ -34,7 +34,8 @@ export default {
       submittingComment: false
     };
   },
-
+  
+  // Fetch recipe details and user ratings when component mounts
   async beforeMount() {
     console.log('[SingleRecipeView] Component mounting...');
     await this.getCurrentUser();
